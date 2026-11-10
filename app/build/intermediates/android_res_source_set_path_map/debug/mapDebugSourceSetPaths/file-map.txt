@@ -1,0 +1,8 @@
+com.example.nativestarter.app-pngs-0 /root/projects/NativeAndroidApp/app/build/generated/res/pngs/debug
+com.example.nativestarter.app-updated_navigation_xml-1 /root/projects/NativeAndroidApp/app/build/generated/updated_navigation_xml/debug
+com.example.nativestarter.app-packageDebugResources-2 /root/projects/NativeAndroidApp/app/build/intermediates/incremental/debug/packageDebugResources/merged.dir
+com.example.nativestarter.app-packageDebugResources-3 /root/projects/NativeAndroidApp/app/build/intermediates/incremental/debug/packageDebugResources/stripped.dir
+com.example.nativestarter.app-debug-4 /root/projects/NativeAndroidApp/app/build/intermediates/merged_res/debug/mergeDebugResources
+com.example.nativestarter.app-debug-5 /root/projects/NativeAndroidApp/app/src/debug/res
+com.example.nativestarter.app-main-6 /root/projects/NativeAndroidApp/app/src/main/res
+gradleHome-0 /data/data/com.termux/files/home/.gradle

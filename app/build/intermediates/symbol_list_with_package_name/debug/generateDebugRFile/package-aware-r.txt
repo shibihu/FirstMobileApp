@@ -1,0 +1,17 @@
+com.example.nativestarter
+drawable ic_launcher_background
+drawable ic_launcher_foreground
+mipmap ic_launcher
+mipmap ic_launcher_round
+string about_title
+string app_name
+string appearance_title
+string dark_mode
+string decrement
+string increment
+string reset
+string settings_title
+string version_label
+string version_unknown
+string welcome_message
+style Theme_NativeStarter

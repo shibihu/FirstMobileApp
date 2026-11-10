@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="about_title">About</string>
+    <string name="app_name">NativeStarter</string>
+    <string name="appearance_title">Appearance</string>
+    <string name="dark_mode">Dark mode</string>
+    <string name="decrement">Decrement</string>
+    <string name="increment">Increment</string>
+    <string name="reset">Reset</string>
+    <string name="settings_title">Settings</string>
+    <string name="version_label">Version</string>
+    <string name="version_unknown">unknown</string>
+    <string name="welcome_message">Welcome, build with Kotlin &amp; Compose</string>
+    <style name="Theme.NativeStarter" parent="android:Theme.Material.Light.NoActionBar"/>
+</resources>
