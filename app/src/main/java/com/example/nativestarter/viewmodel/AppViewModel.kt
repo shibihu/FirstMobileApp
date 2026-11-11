@@ -16,6 +16,11 @@ import com.example.nativestarter.domain.editor.AudioSegment
 import com.example.nativestarter.domain.editor.EditorTimeline
 import com.example.nativestarter.domain.editor.EditorTimelineState
 import com.example.nativestarter.domain.editor.SubtitleCue
+import com.example.nativestarter.domain.assistant.AiSkillRegistry
+import com.example.nativestarter.domain.assistant.AssistantMessage
+import com.example.nativestarter.domain.assistant.AssistantMessageRole
+import com.example.nativestarter.domain.assistant.BackendSkillOperation
+import com.example.nativestarter.domain.assistant.SkillExecutionState
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -25,6 +30,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import java.util.UUID
 
 /** Immutable snapshot exposed to the UI. */
 data class AppUiState(
@@ -48,6 +54,11 @@ data class AppUiState(
     val backendBusy: Boolean = false,
     val backendProgress: Int = 0,
     val backendMessage: String? = null,
+    val assistantMessages: List<AssistantMessage> = emptyList(),
+    val selectedSkillIds: Set<String> = emptySet(),
+    val assistantDraft: String = "",
+    val skillPanelExpanded: Boolean = true,
+    val assistantBusy: Boolean = false,
 )
 
 /**
@@ -66,6 +77,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val aiApi = AiClipStudioApi(application, backendSettings)
     private val exportRepository = ExportRepository(application)
     private var exportJob: Job? = null
+    private var assistantJob: Job? = null
     private val mediaPreferences = application.getSharedPreferences("media_workspace", Application.MODE_PRIVATE)
     private val _uiState = MutableStateFlow(
         AppUiState(
@@ -324,6 +336,271 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
+    fun setAssistantDraft(value: String) {
+        _uiState.update { it.copy(assistantDraft = value) }
+    }
+
+    fun toggleSkillPanel() {
+        _uiState.update { it.copy(skillPanelExpanded = !it.skillPanelExpanded) }
+    }
+
+    fun toggleAssistantSkill(skillId: String) {
+        if (AiSkillRegistry.find(skillId) == null) return
+        _uiState.update { state ->
+            val selected = state.selectedSkillIds
+            state.copy(
+                selectedSkillIds = if (skillId in selected) selected - skillId else selected + skillId,
+            )
+        }
+    }
+
+    fun retryAssistantTurn(messageId: String) {
+        val failed = _uiState.value.assistantMessages.firstOrNull { it.id == messageId } ?: return
+        val text = failed.retryText ?: return
+        sendAssistantMessage(text, failed.retrySkillIds)
+    }
+
+    fun sendAssistantMessage(
+        text: String = _uiState.value.assistantDraft,
+        skillIds: Set<String>? = null,
+    ) {
+        val state = _uiState.value
+        if (state.assistantBusy || state.backendBusy) return
+        val message = text.trim()
+        val requestedSkills = skillIds ?: state.selectedSkillIds
+        val skills = AiSkillRegistry.resolve(requestedSkills)
+        if (message.isBlank() && skills.isEmpty()) return
+        val conversationContext = state.assistantMessages.takeLast(12)
+
+        val retrySkills = skills.map { it.id }.toSet()
+        val userMessage = message.takeIf(String::isNotBlank)?.let {
+            AssistantMessage(id = UUID.randomUUID().toString(), role = AssistantMessageRole.USER, content = it)
+        }
+        _uiState.update { current ->
+            current.copy(
+                assistantDraft = "",
+                assistantMessages = current.assistantMessages + listOfNotNull(userMessage),
+            )
+        }
+
+        assistantJob = viewModelScope.launch {
+            _uiState.update {
+                it.copy(assistantBusy = true, backendBusy = true, backendProgress = 0, backendMessage = null)
+            }
+            try {
+                if (skills.isNotEmpty()) requireSkillApiCapabilities(skills.map { it.id }.toSet())
+                val jobId = ensureBackendJob()
+                if (skills.isEmpty()) {
+                    runChatTurn(jobId, message, retrySkills, conversationContext)
+                } else {
+                    val results = mutableListOf<String>()
+                    val errors = mutableListOf<String>()
+                    val failedSkillIds = mutableSetOf<String>()
+                    for (skill in skills) {
+                        val statusId = appendToolMessage(skill.id, "${skill.displayName}: starting…")
+                        try {
+                            val result = executeSkill(
+                                skill.id,
+                                skill.backendOperation,
+                                skill.executionInstructions,
+                                jobId,
+                                message,
+                                conversationContext,
+                            )
+                            results += "${skill.displayName}: $result"
+                            updateAssistantMessage(
+                                statusId,
+                                content = "${skill.displayName}: $result",
+                                executionState = SkillExecutionState.COMPLETED,
+                            )
+                        } catch (error: CancellationException) {
+                            throw error
+                        } catch (error: Exception) {
+                            val detail = readableBackendError(error)
+                            errors += "${skill.displayName}: $detail"
+                            failedSkillIds += skill.id
+                            updateAssistantMessage(
+                                statusId,
+                                content = "${skill.displayName} failed: $detail",
+                                executionState = SkillExecutionState.FAILED,
+                                retryText = message,
+                                retrySkillIds = setOf(skill.id),
+                            )
+                        }
+                    }
+                    val summary = buildString {
+                        if (results.isNotEmpty()) append("Completed: ").append(results.joinToString("; "))
+                        if (errors.isNotEmpty()) {
+                            if (isNotEmpty()) append("\n")
+                            append("Not completed: ").append(errors.joinToString("; "))
+                        }
+                    }
+                    appendAssistantMessage(
+                        content = summary.ifBlank { "No selected Skills could be executed." },
+                        retryText = message.takeIf { errors.isNotEmpty() },
+                        retrySkillIds = failedSkillIds,
+                    )
+                }
+            } catch (error: CancellationException) {
+                throw error
+            } catch (error: Exception) {
+                Log.e(TAG, "AI assistant turn failed", error)
+                appendAssistantMessage(
+                    content = readableBackendError(error),
+                    retryText = message,
+                    retrySkillIds = retrySkills,
+                )
+            } finally {
+                _uiState.update { it.copy(assistantBusy = false, backendBusy = false) }
+            }
+        }
+    }
+
+    private suspend fun runChatTurn(
+        jobId: String,
+        message: String,
+        selectedSkillIds: Set<String>,
+        conversationContext: List<AssistantMessage>,
+    ) {
+        val statusId = appendAssistantMessage("Thinking…", running = true)
+        try {
+            val response = aiApi.chat(jobId, message, selectedSkillIds, conversationContext)
+            val reply = if (response.has("renderId")) {
+                awaitBackendRender(response, jobId)
+            } else {
+                response.optString("reply").ifBlank { "The backend returned no assistant message." }
+            }
+            updateAssistantMessage(statusId, reply, SkillExecutionState.COMPLETED)
+        } catch (error: CancellationException) {
+            throw error
+        } catch (error: Exception) {
+            updateAssistantMessage(
+                statusId,
+                readableBackendError(error),
+                SkillExecutionState.FAILED,
+                message,
+                selectedSkillIds,
+            )
+        }
+    }
+
+    private suspend fun executeSkill(
+        skillId: String,
+        operation: BackendSkillOperation,
+        instructions: String,
+        jobId: String,
+        userMessage: String,
+        conversationContext: List<AssistantMessage>,
+    ): String = when (operation) {
+        BackendSkillOperation.AUTOMATIC_SUBTITLES -> {
+            val response = aiApi.automaticSubtitles(jobId, userMessage.take(1000))
+            if (!response.has("renderId")) {
+                error(response.optString("reply").ifBlank { "The subtitle service did not start a render." })
+            }
+            val renderReply = awaitBackendRender(response, jobId)
+            buildString {
+                append(renderReply)
+                if (userMessage.isNotBlank()) append(" Subtitle instructions were sent to the configured transcription model.")
+            }
+        }
+        BackendSkillOperation.VOICE_CLEANUP_CHAT -> {
+            val prompt = buildString {
+                append(instructions)
+                if (userMessage.isNotBlank()) append("\n\nUser instruction: ").append(userMessage)
+            }
+            val response = aiApi.chat(jobId, prompt, setOf(skillId), conversationContext)
+            if (!response.has("renderId")) {
+                error(response.optString("reply").ifBlank { "The AI assistant did not start an audio render." })
+            }
+            awaitBackendRender(response, jobId)
+        }
+        BackendSkillOperation.SCENE_DETECTION -> {
+            val threshold = sceneThresholdFromInstruction(userMessage)
+            val response = aiApi.detectScenes(jobId, threshold)
+            val result = response.optJSONObject("result") ?: error("Scene detection returned no tool result.")
+            val scenes = result.optJSONArray("scenes") ?: error("Scene detection returned no scene list.")
+            val times = (0 until scenes.length()).mapNotNull { index ->
+                scenes.optJSONObject(index)?.optDouble("time")?.takeIf(Double::isFinite)?.let { (it * 1000).toLong() }
+            }
+            updateTimeline { it.copy(sceneMarkersMs = times) }
+            val timeList = times.joinToString { "%02d:%02d".format(it / 60_000, it / 1_000 % 60) }
+            buildString {
+                append("Detected ${times.size} visual scene cuts")
+                if (timeList.isNotBlank()) append(" at $timeList")
+                append(" and added them to the timeline. Semantic highlight ranking is not available in this backend tool.")
+                if (threshold != null) append(" Used cut sensitivity $threshold.")
+                if (userMessage.isNotBlank() && threshold == null) append(" The backend supports cut sensitivity, not semantic moment selection; no semantic filtering was applied.")
+            }
+        }
+    }
+
+    private fun appendToolMessage(skillId: String, content: String): String {
+        val message = AssistantMessage(
+            id = UUID.randomUUID().toString(),
+            role = AssistantMessageRole.TOOL,
+            skillId = skillId,
+            content = content,
+            executionState = SkillExecutionState.RUNNING,
+        )
+        _uiState.update { it.copy(assistantMessages = it.assistantMessages + message) }
+        return message.id
+    }
+
+    private fun appendAssistantMessage(
+        content: String,
+        retryText: String? = null,
+        retrySkillIds: Set<String> = emptySet(),
+        running: Boolean = false,
+    ): String {
+        val message = AssistantMessage(
+            id = UUID.randomUUID().toString(),
+            role = AssistantMessageRole.ASSISTANT,
+            content = content,
+            executionState = if (running) SkillExecutionState.RUNNING else null,
+            retryText = retryText,
+            retrySkillIds = retrySkillIds,
+        )
+        _uiState.update { it.copy(assistantMessages = it.assistantMessages + message) }
+        return message.id
+    }
+
+    private fun updateAssistantMessage(
+        id: String,
+        content: String,
+        executionState: SkillExecutionState,
+        retryText: String? = null,
+        retrySkillIds: Set<String> = emptySet(),
+    ) {
+        _uiState.update { current ->
+            current.copy(assistantMessages = current.assistantMessages.map { message ->
+                if (message.id == id) {
+                    message.copy(
+                        content = content,
+                        executionState = executionState,
+                        retryText = retryText,
+                        retrySkillIds = retrySkillIds,
+                    )
+                } else message
+            })
+        }
+    }
+
+    private fun readableBackendError(error: Throwable): String {
+        val raw = error.message.orEmpty()
+        return when {
+            raw.contains("401") || raw.contains("unauthorized", ignoreCase = true) -> "The backend rejected the access token. Check Settings."
+            raw.contains("Unable to resolve host", ignoreCase = true) || raw.contains("failed to connect", ignoreCase = true) -> "Could not reach the backend. Check its URL and that the server is running."
+            raw.contains("timed out", ignoreCase = true) -> "The backend request timed out. Check the server and retry."
+            else -> raw.ifBlank { "The backend request failed. Check the server and retry." }.take(500)
+        }
+    }
+
+    private fun sceneThresholdFromInstruction(instruction: String): Double? {
+        val explicit = Regex("(?:threshold|sensitivity)\\s*(?:of|=|:)?\\s*(0?\\.\\d+|1(?:\\.0+)?)", RegexOption.IGNORE_CASE)
+            .find(instruction)?.groupValues?.getOrNull(1)?.toDoubleOrNull()
+        return explicit?.takeIf { it in 0.05..0.95 }
+    }
+
     fun testBackendConnection() {
         viewModelScope.launch {
             _uiState.update { it.copy(backendBusy = true, backendMessage = "Checking backend…") }
@@ -348,44 +625,6 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun detectScenes() = runBackendAction("Detecting scenes…") { jobId ->
-        val response = aiApi.detectScenes(jobId)
-        val result = response.optJSONObject("result") ?: response
-        val scenes = result.optJSONArray("scenes")
-        val times = if (scenes == null) emptyList() else (0 until scenes.length()).mapNotNull { index ->
-            scenes.optJSONObject(index)?.optDouble("time")?.takeIf(Double::isFinite)?.let { (it * 1000).toLong() }
-        }
-        updateTimeline { it.copy(sceneMarkersMs = times) }
-        _uiState.update { it.copy(backendMessage = "Detected ${times.size} scene cuts.") }
-    }
-
-    fun generateAutomaticSubtitles() = runBackendAction("Generating automatic subtitles…") { jobId ->
-        val response = aiApi.automaticSubtitles(jobId)
-        awaitBackendRender(response, jobId)
-    }
-
-    fun cleanVoiceAudio() = runBackendAction("Requesting voice clean-up…") { jobId ->
-        val response = aiApi.chat(jobId, "Clean up the voice audio, reducing background noise while keeping speech natural.")
-        awaitBackendRender(response, jobId)
-    }
-
-    private fun runBackendAction(initialMessage: String, action: suspend (String) -> Unit) {
-        viewModelScope.launch {
-            _uiState.update { it.copy(backendBusy = true, backendProgress = 0, backendMessage = initialMessage) }
-            try {
-                val jobId = ensureBackendJob()
-                action(jobId)
-            } catch (error: CancellationException) {
-                throw error
-            } catch (error: Exception) {
-                Log.e(TAG, "AIClipStudio backend action failed", error)
-                _uiState.update { it.copy(backendMessage = error.message ?: "Backend request failed.") }
-            } finally {
-                _uiState.update { it.copy(backendBusy = false) }
-            }
-        }
-    }
-
     private suspend fun ensureBackendJob(): String {
         val video = _uiState.value.importedVideo ?: error("Import a video before using AI tools.")
         backendSettings.jobId()?.let { jobId ->
@@ -400,12 +639,23 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         return jobId
     }
 
-    private suspend fun awaitBackendRender(response: org.json.JSONObject, jobId: String) {
+    private suspend fun requireSkillApiCapabilities(skillIds: Set<String>) {
+        val capabilities = aiApi.health().optJSONObject("capabilities")
+        if (capabilities?.optBoolean("androidSkills") != true) {
+            error("This AIClipStudio backend does not support selectable Skills yet. Update the server to the version documented in AIClipStudio-skills-api.md.")
+        }
+        val subtitlesSelected = "automatic_subtitles" in skillIds
+        if (subtitlesSelected && capabilities.optBoolean("captionInstructions") != true) {
+            error("This AIClipStudio backend does not support subtitle instructions yet. Update the server to the version documented in AIClipStudio-skills-api.md.")
+        }
+    }
+
+    private suspend fun awaitBackendRender(response: org.json.JSONObject, jobId: String): String {
         val renderId = response.optString("renderId").takeIf(String::isNotBlank)
         if (renderId == null) {
             val reply = response.optString("reply").ifBlank { "Backend returned no render job." }
             _uiState.update { it.copy(backendMessage = reply) }
-            return
+            return reply
         }
         repeat(900) {
             val result = aiApi.render(jobId, renderId)
@@ -435,7 +685,7 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
                     } else {
                         _uiState.update { it.copy(backendMessage = reply) }
                     }
-                    return
+                    return reply
                 }
                 "failed", "lost" -> error(result.optString("reply").ifBlank { "AIClipStudio render $status." })
             }

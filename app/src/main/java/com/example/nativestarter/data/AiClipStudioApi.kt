@@ -3,6 +3,8 @@ package com.example.nativestarter.data
 import android.content.Context
 import android.net.Uri
 import org.json.JSONObject
+import com.example.nativestarter.domain.assistant.AssistantMessage
+import com.example.nativestarter.domain.assistant.AssistantMessageRole
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.io.BufferedInputStream
@@ -46,27 +48,48 @@ class AiClipStudioApi(private val context: Context, private val settings: Backen
             }
         }
 
-    suspend fun detectScenes(jobId: String): JSONObject = withContext(Dispatchers.IO) {
+    suspend fun detectScenes(jobId: String, threshold: Double? = null): JSONObject = withContext(Dispatchers.IO) {
+        val args = JSONObject()
+        if (threshold != null) args.put("threshold", threshold)
         requestJson(
             "POST",
             "/api/tool",
-            JSONObject().put("id", jobId).put("tool", "detect_scenes").put("args", JSONObject()),
+            JSONObject().put("id", jobId).put("tool", "detect_scenes").put("args", args),
         )
     }
 
-    suspend fun automaticSubtitles(jobId: String): JSONObject = withContext(Dispatchers.IO) {
+    suspend fun automaticSubtitles(jobId: String, instructions: String = ""): JSONObject = withContext(Dispatchers.IO) {
         requestJson(
             "POST",
             "/api/captions",
-            JSONObject().put("id", jobId).put("auto", true),
+            JSONObject()
+                .put("id", jobId)
+                .put("auto", true)
+                .put("skill", "automatic_subtitles")
+                .put("instructions", instructions.take(1000)),
         )
     }
 
-    suspend fun chat(jobId: String, message: String): JSONObject = withContext(Dispatchers.IO) {
+    suspend fun chat(
+        jobId: String,
+        message: String,
+        selectedSkills: Set<String> = emptySet(),
+        conversation: List<AssistantMessage> = emptyList(),
+    ): JSONObject = withContext(Dispatchers.IO) {
+        val context = org.json.JSONArray()
+        conversation.takeLast(12).forEach { turn ->
+            val role = if (turn.role == AssistantMessageRole.USER) "user" else "assistant"
+            val content = if (turn.role == AssistantMessageRole.TOOL) "[Skill execution result] ${turn.content}" else turn.content
+            context.put(JSONObject().put("role", role).put("content", content.take(2000)))
+        }
         requestJson(
             "POST",
             "/api/chat",
-            JSONObject().put("id", jobId).put("message", message),
+            JSONObject()
+                .put("id", jobId)
+                .put("message", message)
+                .put("skills", org.json.JSONArray(selectedSkills.toList()))
+                .put("context", context),
         )
     }
 
