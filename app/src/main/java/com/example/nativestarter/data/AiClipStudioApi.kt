@@ -118,7 +118,7 @@ class AiClipStudioApi(private val context: Context, private val settings: Backen
 
     private fun openConnection(path: String, method: String): HttpURLConnection {
         val base = BackendSettings.normalizeBaseUrl(settings.baseUrl())
-        return (URL(base + path).openConnection() as HttpURLConnection).apply {
+        return (buildEndpointUrl(base, path).openConnection() as HttpURLConnection).apply {
             requestMethod = method
             connectTimeout = CONNECT_TIMEOUT_MS
             readTimeout = READ_TIMEOUT_MS
@@ -129,6 +129,11 @@ class AiClipStudioApi(private val context: Context, private val settings: Backen
         }
     }
 
+    /**
+     * Joins the normalized base origin (never stored with a trailing slash) and an
+     * endpoint path (always forced to exactly one leading slash) without duplicating
+     * separators or accidentally appending an extra "/api" segment.
+     */
     private fun readResponse(connection: HttpURLConnection): JSONObject {
         val code = connection.responseCode
         val stream = if (code in 200..299) connection.inputStream else connection.errorStream
@@ -147,5 +152,12 @@ class AiClipStudioApi(private val context: Context, private val settings: Backen
         private const val CONNECT_TIMEOUT_MS = 10_000
         private const val READ_TIMEOUT_MS = 60_000
         private const val COPY_BUFFER_SIZE = 64 * 1024
+
+        internal fun buildEndpointUrl(base: String, path: String): URL {
+            val origin = BackendSettings.normalizeBaseUrl(base)
+            val endpoint = path.trimStart('/')
+            require(endpoint.isNotBlank()) { "Backend endpoint path is required." }
+            return URL("$origin/$endpoint")
+        }
     }
 }

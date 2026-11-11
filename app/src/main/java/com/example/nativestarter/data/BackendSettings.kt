@@ -88,21 +88,45 @@ class BackendSettings(context: Context) {
         private const val GCM_TAG_LENGTH_BITS = 128
 
         fun normalizeBaseUrl(value: String): String {
-            val trimmed = value.trim().trimEnd('/')
-            require(trimmed.isNotEmpty()) { "Enter the backend HTTPS URL." }
+            val trimmed = value.trim()
+            require(trimmed.isNotEmpty()) { "Enter the backend URL." }
             val uri = runCatching { URI(trimmed) }.getOrElse {
                 throw IllegalArgumentException("Enter a valid backend URL.")
             }
-            require(uri.scheme.equals("https", ignoreCase = true)) {
-                "Backend URL must use HTTPS. Put a TLS reverse proxy in front of the reference server."
-            }
+            val scheme = uri.scheme?.lowercase()
+            val host = uri.host?.lowercase()?.removeSurrounding("[", "]")
+            val port = uri.port
+            require(port == -1 || port in 1..65535) { "Backend URL has an invalid port." }
             require(
-                !uri.host.isNullOrBlank() && uri.userInfo == null && uri.query == null &&
+                !host.isNullOrBlank() && uri.userInfo == null && uri.query == null &&
                     uri.fragment == null && uri.path.orEmpty() in listOf("", "/"),
             ) {
                 "Backend URL must be a root origin without credentials, path, query, or fragment."
             }
-            return trimmed
+            when (scheme) {
+                "http" -> require(
+                    (host == "localhost" || host == "127.0.0.1") && port in LOCAL_HTTP_PORTS,
+                ) {
+                    "HTTP is allowed only at http://localhost:3000, http://127.0.0.1:3000, http://localhost:10000, or http://127.0.0.1:10000. Remote backends must use HTTPS."
+                }
+                "https" -> Unit
+                else -> throw IllegalArgumentException(
+                    "Backend URL must use HTTPS. HTTP is allowed only for the supported local loopback URLs.",
+                )
+            }
+            val authorityHost = if (host.contains(':')) "[$host]" else host
+            val authorityPort = if (port == -1) "" else ":$port"
+            return "$scheme://$authorityHost$authorityPort"
         }
+
+        /** True when [baseUrl] is a loopback HTTP origin (local Termux development server). */
+        fun isLocalHttpBaseUrl(baseUrl: String): Boolean = runCatching {
+            val uri = URI(normalizeBaseUrl(baseUrl))
+            uri.scheme?.lowercase() == "http" &&
+                uri.host?.lowercase()?.removeSurrounding("[", "]") in setOf("localhost", "127.0.0.1") &&
+                uri.port in LOCAL_HTTP_PORTS
+        }.getOrDefault(false)
+
+        private val LOCAL_HTTP_PORTS = setOf(3000, 10000)
     }
 }

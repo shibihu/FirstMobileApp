@@ -44,7 +44,7 @@ fun AiToolsScreen(viewModel: AppViewModel) {
         TopAppBar(title = { Text("AI Studio") }, modifier = Modifier.fillMaxWidth())
         Text(
             when {
-                state.backendBaseUrl.isBlank() -> "Set an HTTPS backend URL in Settings before running AI tools."
+                state.backendBaseUrl.isBlank() -> "Set a remote HTTPS or supported local loopback backend URL in Settings before running AI tools."
                 state.importedVideo == null -> "Import a video before running backend analysis."
                 else -> "The selected video is uploaded to your configured AIClipStudio server when an action runs."
             },

@@ -103,8 +103,8 @@ private fun BackendSection(
         OutlinedTextField(
             value = urlInput,
             onValueChange = { urlInput = it },
-            label = { Text("Backend HTTPS URL") },
-            placeholder = { Text("https://studio.example.com") },
+            label = { Text("Backend URL") },
+            placeholder = { Text("https://studio.example.com or http://localhost:3000") },
             modifier = Modifier.fillMaxWidth(),
             singleLine = true,
         )
@@ -135,6 +135,11 @@ private fun BackendSection(
                 color = if (connected == false) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
             )
         }
+        Text(
+            "Remote backends must use HTTPS. Local HTTP is limited to http://localhost:3000, http://127.0.0.1:3000, http://localhost:10000, and http://127.0.0.1:10000.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
         Text(
             "The backend needs its own AI provider configuration. Provider API keys are never stored in this app.",
             style = MaterialTheme.typography.bodySmall,

@@ -16,3 +16,4 @@ string version_label
 string version_unknown
 string welcome_message
 style Theme.NativeStarter
+xml network_security_config

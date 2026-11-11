@@ -1,9 +1,9 @@
 -- Merging decision tree log ---
 manifest
-ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:2:1-22:12
-INJECTED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:2:1-22:12
-INJECTED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:2:1-22:12
-INJECTED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:2:1-22:12
+ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:2:1-23:12
+INJECTED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:2:1-23:12
+INJECTED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:2:1-23:12
+INJECTED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:2:1-23:12
 MERGED from [androidx.navigation:navigation-common:2.7.7] /data/data/com.termux/files/home/.gradle/caches/9.6.0/transforms/d1daee3d69676808e5cf0b6c73f7c49e/transformed/navigation-common-2.7.7/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.navigation:navigation-runtime:2.7.7] /data/data/com.termux/files/home/.gradle/caches/9.6.0/transforms/cac4d35fa85d2f328f9b6fdef5acfb76/transformed/navigation-runtime-2.7.7/AndroidManifest.xml:17:1-22:12
 MERGED from [androidx.navigation:navigation-common-ktx:2.7.7] /data/data/com.termux/files/home/.gradle/caches/9.6.0/transforms/2dda3ab2e31d74c082fbab9b5c35748a/transformed/navigation-common-ktx-2.7.7/AndroidManifest.xml:2:1-7:12
@@ -81,8 +81,8 @@ ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:4:5-
 	android:name
 		ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:4:22-64
 application
-ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:6:5-21:19
-INJECTED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:6:5-21:19
+ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:6:5-22:19
+INJECTED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:6:5-22:19
 MERGED from [androidx.emoji2:emoji2:1.3.0] /data/data/com.termux/files/home/.gradle/caches/9.6.0/transforms/d683d76a7fe98172fd9a21ae77347da0/transformed/emoji2-1.3.0/AndroidManifest.xml:23:5-33:19
 MERGED from [androidx.emoji2:emoji2:1.3.0] /data/data/com.termux/files/home/.gradle/caches/9.6.0/transforms/d683d76a7fe98172fd9a21ae77347da0/transformed/emoji2-1.3.0/AndroidManifest.xml:23:5-33:19
 MERGED from [androidx.core:core:1.13.1] /data/data/com.termux/files/home/.gradle/caches/9.6.0/transforms/d45af1d639ac8ac8177ad47ae511d122/transformed/core-1.13.1/AndroidManifest.xml:28:5-89
@@ -100,7 +100,7 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] /data/data/com.termux/files
 	android:appComponentFactory
 		ADDED from [androidx.core:core:1.13.1] /data/data/com.termux/files/home/.gradle/caches/9.6.0/transforms/d45af1d639ac8ac8177ad47ae511d122/transformed/core-1.13.1/AndroidManifest.xml:28:18-86
 	android:supportsRtl
-		ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:10:9-35
+		ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:11:9-35
 	android:label
 		ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:9:9-41
 	android:icon
@@ -108,23 +108,25 @@ MERGED from [androidx.startup:startup-runtime:1.1.1] /data/data/com.termux/files
 	android:allowBackup
 		ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:7:9-35
 	android:theme
-		ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:11:9-51
+		ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:12:9-51
+	android:networkSecurityConfig
+		ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:10:9-69
 activity#com.example.nativestarter.MainActivity
-ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:13:9-20:20
+ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:14:9-21:20
 	android:exported
-		ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:15:13-36
+		ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:16:13-36
 	android:name
-		ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:14:13-41
+		ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:15:13-41
 intent-filter#action:name:android.intent.action.MAIN+category:name:android.intent.category.LAUNCHER
-ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:16:13-19:29
+ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:17:13-20:29
 action#android.intent.action.MAIN
-ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:17:17-69
+ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:18:17-69
 	android:name
-		ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:17:25-66
+		ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:18:25-66
 category#android.intent.category.LAUNCHER
-ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:18:17-77
+ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:19:17-77
 	android:name
-		ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:18:27-74
+		ADDED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml:19:27-74
 uses-sdk
 INJECTED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml reason: use-sdk injection requested
 INJECTED from /root/projects/NativeAndroidApp/app/src/main/AndroidManifest.xml
