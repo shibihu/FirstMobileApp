@@ -277,9 +277,22 @@ private fun ChatComposer(
             Row(verticalAlignment = Alignment.Bottom, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
                     value = draft,
-                    onValueChange = onDraftChange,
+                    onValueChange = { value ->
+                        onDraftChange(
+                            if (selectedSkills.any { it.id == "automatic_subtitles" }) value.take(1000)
+                            else value,
+                        )
+                    },
                     modifier = Modifier.weight(1f),
-                    placeholder = { Text("Ask about your video…") },
+                    placeholder = {
+                        Text(
+                            if (selectedSkills.any { it.id == "automatic_subtitles" }) {
+                                "Optional subtitle instructions (up to 1,000 characters)…"
+                            } else {
+                                "Ask about your video…"
+                            },
+                        )
+                    },
                     maxLines = 4,
                     shape = RoundedCornerShape(22.dp),
                 )
@@ -316,6 +329,9 @@ private fun SkillSelectionRow(
             Column(modifier = Modifier.weight(1f)) {
                 Text(skill.displayName, style = MaterialTheme.typography.bodyMedium)
                 Text(skill.description, style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                skill.limitation?.let { limitation ->
+                    Text(limitation, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
             }
             if (selected) Icon(Icons.Filled.Check, contentDescription = "Selected", tint = MaterialTheme.colorScheme.primary)
         }
