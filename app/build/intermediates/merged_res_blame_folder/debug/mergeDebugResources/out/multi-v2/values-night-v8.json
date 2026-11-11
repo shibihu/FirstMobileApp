@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.nativestarter.app-mergeDebugResources-46:/values-night-v8/values-night-v8.xml",
+            "outputFile": "com.example.nativestarter.app-mergeDebugResources-50:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
                     "source": "/root/projects/NativeAndroidApp/app/src/main/res/values-night/styles.xml",

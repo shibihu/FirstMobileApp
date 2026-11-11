@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.nativestarter.app-mergeDebugResources-46:/values-as/values-as.xml",
+            "outputFile": "com.example.nativestarter.app-mergeDebugResources-50:/values-as/values-as.xml",
             "map": [
                 {
                     "source": "/data/data/com.termux/files/home/.gradle/caches/9.6.0/transforms/674b3953b5f9460d8df41ce5cda0eefd/transformed/ui-release/res/values-as/values-as.xml",

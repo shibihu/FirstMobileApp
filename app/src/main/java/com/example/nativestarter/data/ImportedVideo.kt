@@ -8,4 +8,8 @@ data class ImportedVideo(
     val durationMs: Long?,
     val width: Int?,
     val height: Int?,
+    val videoMimeType: String?,
+    val audioMimeTypes: List<String>,
+    val persistedGrant: Boolean,
+    val failureReason: String? = null,
 )

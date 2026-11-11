@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.nativestarter.app-mergeDebugResources-46:/values-pt-rBR/values-pt-rBR.xml",
+            "outputFile": "com.example.nativestarter.app-mergeDebugResources-50:/values-pt-rBR/values-pt-rBR.xml",
             "map": [
                 {
                     "source": "/data/data/com.termux/files/home/.gradle/caches/9.6.0/transforms/d45af1d639ac8ac8177ad47ae511d122/transformed/core-1.13.1/res/values-pt-rBR/values-pt-rBR.xml",

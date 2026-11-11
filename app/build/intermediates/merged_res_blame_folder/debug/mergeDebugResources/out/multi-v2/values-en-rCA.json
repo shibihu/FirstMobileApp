@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.nativestarter.app-mergeDebugResources-46:/values-en-rCA/values-en-rCA.xml",
+            "outputFile": "com.example.nativestarter.app-mergeDebugResources-50:/values-en-rCA/values-en-rCA.xml",
             "map": [
                 {
                     "source": "/data/data/com.termux/files/home/.gradle/caches/9.6.0/transforms/6c50fe488ca8e14fcefdfb6bbe415fcb/transformed/material3-release/res/values-en-rCA/values-en-rCA.xml",

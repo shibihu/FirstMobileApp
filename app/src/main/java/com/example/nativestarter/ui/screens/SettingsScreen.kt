@@ -14,18 +14,24 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Switch
+import androidx.compose.material3.Button
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import com.example.nativestarter.R
 import com.example.nativestarter.viewmodel.AppViewModel
 
@@ -49,7 +55,16 @@ fun SettingsScreen(viewModel: AppViewModel) {
             isDarkTheme = state.isDarkTheme,
             onDarkThemeChange = viewModel::setDarkTheme,
         )
-        WorkflowSection()
+        BackendSection(
+            baseUrl = state.backendBaseUrl,
+            tokenConfigured = state.backendTokenConfigured,
+            connected = state.backendConnected,
+            busy = state.backendBusy,
+            message = state.backendMessage,
+            onSave = viewModel::saveBackendSettings,
+            onClearToken = viewModel::clearBackendToken,
+            onTest = viewModel::testBackendConnection,
+        )
         AboutSection()
     }
 }
@@ -72,10 +87,59 @@ private fun AppearanceSection(
 }
 
 @Composable
-private fun WorkflowSection() {
-    SectionCard(title = "Editor workflow") {
-        LabeledRow(label = "Video export", value = "Not available yet")
-        LabeledRow(label = "AI provider", value = "Not configured")
+private fun BackendSection(
+    baseUrl: String,
+    tokenConfigured: Boolean,
+    connected: Boolean?,
+    busy: Boolean,
+    message: String?,
+    onSave: (String, String) -> Unit,
+    onClearToken: () -> Unit,
+    onTest: () -> Unit,
+) {
+    var urlInput by remember(baseUrl) { mutableStateOf(baseUrl) }
+    var tokenInput by remember { mutableStateOf("") }
+    SectionCard(title = "AIClipStudio backend") {
+        OutlinedTextField(
+            value = urlInput,
+            onValueChange = { urlInput = it },
+            label = { Text("Backend HTTPS URL") },
+            placeholder = { Text("https://studio.example.com") },
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+        )
+        OutlinedTextField(
+            value = tokenInput,
+            onValueChange = { tokenInput = it },
+            label = { Text(if (tokenConfigured) "Replace server access token" else "Server access token (optional)") },
+            visualTransformation = PasswordVisualTransformation(),
+            modifier = Modifier.fillMaxWidth(),
+            singleLine = true,
+        )
+        Text(
+            if (tokenConfigured) "Access token stored encrypted with Android Keystore." else "No access token stored.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            Button(onClick = { onSave(urlInput, tokenInput); tokenInput = "" }) { Text("Save") }
+            OutlinedButton(onClick = onTest, enabled = !busy && baseUrl.isNotBlank()) {
+                Text(if (busy) "Checking…" else "Test connection")
+            }
+            if (tokenConfigured) TextButton(onClick = onClearToken) { Text("Clear token") }
+        }
+        message?.let {
+            Text(
+                it,
+                style = MaterialTheme.typography.bodySmall,
+                color = if (connected == false) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onSurfaceVariant,
+            )
+        }
+        Text(
+            "The backend needs its own AI provider configuration. Provider API keys are never stored in this app.",
+            style = MaterialTheme.typography.bodySmall,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
     }
 }
 
