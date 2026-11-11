@@ -29,9 +29,6 @@ import androidx.compose.ui.unit.dp
 import com.example.nativestarter.R
 import com.example.nativestarter.viewmodel.AppViewModel
 
-/**
- * Settings screen: theme toggle plus an about section with version info.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(viewModel: AppViewModel) {
@@ -41,7 +38,8 @@ fun SettingsScreen(viewModel: AppViewModel) {
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
-            .padding(horizontal = 24.dp),
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        verticalArrangement = Arrangement.spacedBy(12.dp),
     ) {
         TopAppBar(
             title = { Text(stringResource(R.string.settings_title)) },
@@ -51,6 +49,7 @@ fun SettingsScreen(viewModel: AppViewModel) {
             isDarkTheme = state.isDarkTheme,
             onDarkThemeChange = viewModel::setDarkTheme,
         )
+        WorkflowSection()
         AboutSection()
     }
 }
@@ -73,6 +72,14 @@ private fun AppearanceSection(
 }
 
 @Composable
+private fun WorkflowSection() {
+    SectionCard(title = "Editor workflow") {
+        LabeledRow(label = "Video export", value = "Not available yet")
+        LabeledRow(label = "AI provider", value = "Not configured")
+    }
+}
+
+@Composable
 private fun AboutSection() {
     val context = LocalContext.current
     val versionName by remember { mutableStateOf(resolveVersionName(context)) }
@@ -85,7 +92,7 @@ private fun AboutSection() {
 
 @Composable
 private fun LabeledRow(label: String, value: String? = null) {
-    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 4.dp)) {
+    Column(modifier = Modifier.fillMaxWidth().padding(vertical = 5.dp)) {
         Text(label, style = MaterialTheme.typography.bodyLarge)
         if (value != null) {
             Text(
@@ -97,7 +104,6 @@ private fun LabeledRow(label: String, value: String? = null) {
     }
 }
 
-/** Resolves the installed package version; falls back to a fixed value in tests. */
 private fun resolveVersionName(context: Context): String {
     val unknown = context.getString(R.string.version_unknown)
     return try {
@@ -114,8 +120,8 @@ private fun SectionCard(
     title: String,
     content: @Composable androidx.compose.foundation.layout.ColumnScope.() -> Unit,
 ) {
-    Card(modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp)) {
-        Column(modifier = Modifier.padding(16.dp)) {
+    Card(modifier = Modifier.fillMaxWidth()) {
+        Column(modifier = Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
             Text(title, style = MaterialTheme.typography.titleMedium)
             content()
         }

@@ -13,7 +13,7 @@ object ThemePreferences {
 
     fun load(context: Context): Boolean {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        return prefs.getBoolean(KEY_DARK_THEME, false)
+        return prefs.getBoolean(KEY_DARK_THEME, true)
     }
 
     fun save(context: Context, darkTheme: Boolean) {

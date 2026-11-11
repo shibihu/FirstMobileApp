@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">NativeStarter</string>
-    <string name="welcome_message">Welcome, build with Kotlin &amp; Compose</string>
+    <string name="app_name">AIClipStudio</string>
+    <string name="welcome_message">Creative video studio for mobile</string>
     <string name="increment">Increment</string>
     <string name="decrement">Decrement</string>
     <string name="reset">Reset</string>

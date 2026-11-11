@@ -1,0 +1,8 @@
+--2026-11-11 07:42:35--  https://codeload.github.com/shibihu/AIClipStudio/tar.gz/refs/heads/main
+Resolving codeload.github.com (codeload.github.com)... 20.205.243.165
+Connecting to codeload.github.com (codeload.github.com)|20.205.243.165|:443... connected.
+HTTP request sent, awaiting response... 200 OK
+Length: unspecified [application/x-gzip]
+Saving to: ‘/tmp/AIClipStudio.tar.gz’
+
+/tmp/AIClipStudio.t     [    <=>             ]  17.99M  89.6KB/s               

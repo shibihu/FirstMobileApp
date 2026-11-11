@@ -2,8 +2,11 @@ package com.example.nativestarter.navigation
 
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.Timeline
+import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
@@ -18,13 +21,19 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.nativestarter.ui.screens.AiToolsScreen
+import com.example.nativestarter.ui.screens.EditorScreen
 import com.example.nativestarter.ui.screens.HomeScreen
+import com.example.nativestarter.ui.screens.MediaLibraryScreen
 import com.example.nativestarter.ui.screens.SettingsScreen
 import com.example.nativestarter.viewmodel.AppViewModel
 
-/** Route names for the two top-level destinations. */
+/** Route names for the app's primary destinations. */
 object Routes {
-    const val HOME = "home"
+    const val HOME = "dashboard"
+    const val MEDIA = "media"
+    const val EDITOR = "editor"
+    const val AI = "ai"
     const val SETTINGS = "settings"
 }
 
@@ -35,13 +44,16 @@ private data class NavItem(
 )
 
 private val navItems = listOf(
-    NavItem(Routes.HOME, "Home", Icons.Filled.Home),
+    NavItem(Routes.HOME, "Dashboard", Icons.Filled.Home),
+    NavItem(Routes.MEDIA, "Media", Icons.Filled.VideoLibrary),
+    NavItem(Routes.EDITOR, "Editor", Icons.Filled.Timeline),
+    NavItem(Routes.AI, "AI", Icons.Filled.AutoAwesome),
     NavItem(Routes.SETTINGS, "Settings", Icons.Filled.Settings),
 )
 
 /**
  * App shell: bottom navigation bar plus the navigation host.
- * Counter and settings state live in one [AppViewModel], scoped to the activity.
+ * The workspace state is scoped to the activity via [AppViewModel].
  */
 @Composable
 fun AppRoot(viewModel: AppViewModel) {
@@ -79,7 +91,21 @@ fun AppRoot(viewModel: AppViewModel) {
             modifier = Modifier.padding(innerPadding),
         ) {
             composable(Routes.HOME) {
-                HomeScreen(viewModel = viewModel)
+                HomeScreen(
+                    viewModel = viewModel,
+                    onContinueEditing = { navController.navigate(Routes.EDITOR) },
+                    onImportMedia = { navController.navigate(Routes.MEDIA) },
+                    onOpenAi = { navController.navigate(Routes.AI) },
+                )
+            }
+            composable(Routes.MEDIA) {
+                MediaLibraryScreen(viewModel = viewModel)
+            }
+            composable(Routes.EDITOR) {
+                EditorScreen(viewModel = viewModel)
+            }
+            composable(Routes.AI) {
+                AiToolsScreen(viewModel = viewModel)
             }
             composable(Routes.SETTINGS) {
                 SettingsScreen(viewModel = viewModel)
