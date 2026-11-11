@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="com.example.nativestarter.data.BackendSettingsTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-11-11T13:16:35.016Z" hostname="localhost" time="0.633">
+<testsuite name="com.example.nativestarter.data.BackendSettingsTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-11-11T14:02:26.414Z" hostname="localhost" time="0.768">
   <properties/>
-  <testcase name="rejectsUrlsWithPathOrQuery" classname="com.example.nativestarter.data.BackendSettingsTest" time="0.402"/>
-  <testcase name="rejectsRemoteHttp" classname="com.example.nativestarter.data.BackendSettingsTest" time="0.014"/>
-  <testcase name="acceptsRemoteHttps" classname="com.example.nativestarter.data.BackendSettingsTest" time="0.067"/>
+  <testcase name="rejectsUrlsWithPathOrQuery" classname="com.example.nativestarter.data.BackendSettingsTest" time="0.426"/>
+  <testcase name="rejectsRemoteHttp" classname="com.example.nativestarter.data.BackendSettingsTest" time="0.013"/>
+  <testcase name="acceptsRemoteHttps" classname="com.example.nativestarter.data.BackendSettingsTest" time="0.122"/>
   <testcase name="acceptsLoopbackIpHttp" classname="com.example.nativestarter.data.BackendSettingsTest" time="0.003"/>
-  <testcase name="acceptsLocalhostHttp" classname="com.example.nativestarter.data.BackendSettingsTest" time="0.002"/>
-  <testcase name="normalizesTrailingSlashOnHttpsOrigin" classname="com.example.nativestarter.data.BackendSettingsTest" time="0.002"/>
-  <testcase name="rejectsCredentialBearingUrls" classname="com.example.nativestarter.data.BackendSettingsTest" time="0.01"/>
-  <testcase name="endpointJoiningAddsOneSeparatorAndDoesNotDuplicateApiPrefix" classname="com.example.nativestarter.data.BackendSettingsTest" time="0.047"/>
-  <testcase name="flagsLocalHttpBaseUrls" classname="com.example.nativestarter.data.BackendSettingsTest" time="0.01"/>
-  <testcase name="rejectsMalformedUrls" classname="com.example.nativestarter.data.BackendSettingsTest" time="0.012"/>
+  <testcase name="acceptsLocalhostHttp" classname="com.example.nativestarter.data.BackendSettingsTest" time="0.016"/>
+  <testcase name="normalizesTrailingSlashOnHttpsOrigin" classname="com.example.nativestarter.data.BackendSettingsTest" time="0.003"/>
+  <testcase name="rejectsCredentialBearingUrls" classname="com.example.nativestarter.data.BackendSettingsTest" time="0.005"/>
+  <testcase name="endpointJoiningAddsOneSeparatorAndDoesNotDuplicateApiPrefix" classname="com.example.nativestarter.data.BackendSettingsTest" time="0.054"/>
+  <testcase name="flagsLocalHttpBaseUrls" classname="com.example.nativestarter.data.BackendSettingsTest" time="0.021"/>
+  <testcase name="rejectsMalformedUrls" classname="com.example.nativestarter.data.BackendSettingsTest" time="0.007"/>
   <system-out><![CDATA[]]></system-out>
   <system-err><![CDATA[]]></system-err>
 </testsuite>
