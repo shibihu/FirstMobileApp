@@ -11,9 +11,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -60,8 +63,10 @@ fun AppRoot(viewModel: AppViewModel) {
     val navController = rememberNavController()
     val backStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = backStackEntry?.destination?.route ?: Routes.HOME
+    val snackbarHostState = remember { SnackbarHostState() }
 
     Scaffold(
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         bottomBar = {
             NavigationBar {
                 navItems.forEach { item ->
@@ -102,7 +107,7 @@ fun AppRoot(viewModel: AppViewModel) {
                 MediaLibraryScreen(viewModel = viewModel)
             }
             composable(Routes.EDITOR) {
-                EditorScreen(viewModel = viewModel)
+                EditorScreen(viewModel = viewModel, snackbarHostState = snackbarHostState)
             }
             composable(Routes.AI) {
                 AiToolsScreen(viewModel = viewModel)

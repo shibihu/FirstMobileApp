@@ -213,6 +213,171 @@
           "oklch(88% 0.0287 260)",
           "oklch(95% 0.0250 260)"
         ]
+      },
+      "teal-deep": {
+        "role": "tertiary",
+        "displayName": "Mixer Teal Deep",
+        "canonical": "oklch(51% 0.0861 186)",
+        "tonalRamp": [
+          "oklch(15% 0.0581 186)",
+          "oklch(28% 0.0682 186)",
+          "oklch(40% 0.0775 186)",
+          "oklch(52% 0.0854 186)",
+          "oklch(64% 0.0761 186)",
+          "oklch(76% 0.0668 186)",
+          "oklch(88% 0.0575 186)",
+          "oklch(95% 0.0521 186)"
+        ]
+      },
+      "teal-container": {
+        "role": "tertiary",
+        "displayName": "Mixer Teal Container",
+        "canonical": "oklch(95% 0.0498 181)",
+        "tonalRamp": [
+          "oklch(15% 0.0138 181)",
+          "oklch(28% 0.0197 181)",
+          "oklch(40% 0.0250 181)",
+          "oklch(52% 0.0304 181)",
+          "oklch(64% 0.0358 181)",
+          "oklch(76% 0.0412 181)",
+          "oklch(88% 0.0465 181)",
+          "oklch(95% 0.0497 181)"
+        ]
+      },
+      "bench-surface-variant": {
+        "role": "neutral",
+        "displayName": "Bench Surface Variant",
+        "canonical": "oklch(94% 0.0109 257)",
+        "tonalRamp": [
+          "oklch(15% 0.0031 257)",
+          "oklch(28% 0.0044 257)",
+          "oklch(40% 0.0056 257)",
+          "oklch(52% 0.0067 257)",
+          "oklch(64% 0.0079 257)",
+          "oklch(76% 0.0091 257)",
+          "oklch(88% 0.0103 257)",
+          "oklch(95% 0.0108 257)"
+        ]
+      },
+      "bench-outline": {
+        "role": "neutral",
+        "displayName": "Bench Outline",
+        "canonical": "oklch(55% 0.0407 257)",
+        "tonalRamp": [
+          "oklch(15% 0.0259 257)",
+          "oklch(28% 0.0307 257)",
+          "oklch(40% 0.0351 257)",
+          "oklch(52% 0.0395 257)",
+          "oklch(64% 0.0376 257)",
+          "oklch(76% 0.0332 257)",
+          "oklch(88% 0.0288 257)",
+          "oklch(95% 0.0262 257)"
+        ]
+      },
+      "surface-container": {
+        "role": "neutral",
+        "displayName": "Surface Container",
+        "canonical": "oklch(97% 0.0069 248)",
+        "tonalRamp": [
+          "oklch(15% 0.0018 248)",
+          "oklch(28% 0.0026 248)",
+          "oklch(40% 0.0033 248)",
+          "oklch(52% 0.0041 248)",
+          "oklch(64% 0.0048 248)",
+          "oklch(76% 0.0056 248)",
+          "oklch(88% 0.0063 248)",
+          "oklch(95% 0.0067 248)"
+        ]
+      },
+      "booth-surface-variant": {
+        "role": "neutral",
+        "displayName": "Booth Surface Variant",
+        "canonical": "oklch(28% 0.0368 260)",
+        "tonalRamp": [
+          "oklch(15% 0.0326 260)",
+          "oklch(28% 0.0368 260)",
+          "oklch(40% 0.0329 260)",
+          "oklch(52% 0.0289 260)",
+          "oklch(64% 0.0249 260)",
+          "oklch(76% 0.0209 260)",
+          "oklch(88% 0.0169 260)",
+          "oklch(95% 0.0146 260)"
+        ]
+      },
+      "booth-container": {
+        "role": "neutral",
+        "displayName": "Booth Container",
+        "canonical": "oklch(22% 0.0305 259)",
+        "tonalRamp": [
+          "oklch(15% 0.0285 259)",
+          "oklch(28% 0.0290 259)",
+          "oklch(40% 0.0257 259)",
+          "oklch(52% 0.0224 259)",
+          "oklch(64% 0.0191 259)",
+          "oklch(76% 0.0158 259)",
+          "oklch(88% 0.0125 259)",
+          "oklch(95% 0.0106 259)"
+        ]
+      },
+      "error-red": {
+        "role": "neutral",
+        "displayName": "Error Red",
+        "canonical": "oklch(50% 0.1783 29)",
+        "tonalRamp": [
+          "oklch(15% 0.1219 29)",
+          "oklch(28% 0.1428 29)",
+          "oklch(40% 0.1621 29)",
+          "oklch(52% 0.1753 29)",
+          "oklch(64% 0.1561 29)",
+          "oklch(76% 0.1368 29)",
+          "oklch(88% 0.1175 29)",
+          "oklch(95% 0.1063 29)"
+        ]
+      },
+      "error-container": {
+        "role": "neutral",
+        "displayName": "Error Container",
+        "canonical": "oklch(94% 0.0288 23)",
+        "tonalRamp": [
+          "oklch(15% 0.0083 23)",
+          "oklch(28% 0.0117 23)",
+          "oklch(40% 0.0148 23)",
+          "oklch(52% 0.0179 23)",
+          "oklch(64% 0.0210 23)",
+          "oklch(76% 0.0241 23)",
+          "oklch(88% 0.0273 23)",
+          "oklch(95% 0.0285 23)"
+        ]
+      },
+      "error-red-dark": {
+        "role": "neutral",
+        "displayName": "Error Red Dark",
+        "canonical": "oklch(83% 0.0677 22)",
+        "tonalRamp": [
+          "oklch(15% 0.0260 22)",
+          "oklch(28% 0.0339 22)",
+          "oklch(40% 0.0412 22)",
+          "oklch(52% 0.0485 22)",
+          "oklch(64% 0.0559 22)",
+          "oklch(76% 0.0632 22)",
+          "oklch(88% 0.0649 22)",
+          "oklch(95% 0.0607 22)"
+        ]
+      },
+      "error-container-dark": {
+        "role": "neutral",
+        "displayName": "Error Container Dark",
+        "canonical": "oklch(42% 0.1473 28)",
+        "tonalRamp": [
+          "oklch(15% 0.1115 28)",
+          "oklch(28% 0.1287 28)",
+          "oklch(40% 0.1447 28)",
+          "oklch(52% 0.1341 28)",
+          "oklch(64% 0.1182 28)",
+          "oklch(76% 0.1022 28)",
+          "oklch(88% 0.0863 28)",
+          "oklch(95% 0.0771 28)"
+        ]
       }
     },
     "typographyMeta": {
@@ -305,8 +470,8 @@
       "kind": "card",
       "refersTo": "card-hero",
       "description": "The only expressive surface: 24dp gradient card that states the current job and offers one action.",
-      "html": "<section class=\"ds-hero\"><div class=\"ds-hero-eyebrow\"><span class=\"ds-hero-well\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"#fff\" aria-hidden=\"true\"><path d=\"M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z\"/></svg></span>Creative workspace</div><h2 class=\"ds-hero-title\">sunset-drive.mp4</h2><p class=\"ds-hero-sub\">00:42 &middot; Video ready to preview</p><button class=\"ds-hero-btn\">Open editor</button></section>",
-      "css": ".ds-hero { display: flex; flex-direction: column; gap: 12px; padding: 20px; border-radius: 24px; background: linear-gradient(135deg, rgba(106,167,255,0.9), rgba(234,242,255,0.7)); font-family: Roboto, Helvetica Neue, Arial, sans-serif; } .ds-hero-eyebrow { display: flex; align-items: center; gap: 10px; color: #fff; font-size: 16px; font-weight: 500; letter-spacing: 0.15px; } .ds-hero-well { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.15); } .ds-hero-title { margin: 0; color: #fff; font-size: 28px; font-weight: 400; line-height: 1.29; } .ds-hero-sub { margin: 0; color: rgba(255,255,255,0.9); font-size: 14px; line-height: 1.43; } .ds-hero-btn { height: 40px; border: none; border-radius: 999px; background: #FFFFFF; color: #0B1220; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 160ms ease; } .ds-hero-btn:hover { background: #EAF2FF; } .ds-hero-btn:focus-visible { outline: 2px solid #0B1220; outline-offset: 2px; }"
+      "html": "<section class=\"ds-hero\"><div class=\"ds-hero-eyebrow\"><span class=\"ds-hero-well\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"#0B1220\" aria-hidden=\"true\"><path d=\"M19 9l1.25-2.75L23 5l-2.75-1.25L19 1l-1.25 2.75L15 5l2.75 1.25L19 9zm-7.5.5L9 4 6.5 9.5 1 12l5.5 2.5L9 20l2.5-5.5L17 12l-5.5-2.5zM19 15l-1.25 2.75L15 19l2.75 1.25L19 23l1.25-2.75L23 19l-2.75-1.25L19 15z\"/></svg></span>Creative workspace</div><h2 class=\"ds-hero-title\">sunset-drive.mp4</h2><p class=\"ds-hero-sub\">00:42 &middot; Video ready to preview</p><button class=\"ds-hero-btn\">Open editor</button></section>",
+      "css": ".ds-hero { display: flex; flex-direction: column; gap: 12px; padding: 20px; border-radius: 24px; background: linear-gradient(135deg, #6AA7FF, rgba(106,167,255,0.72)); font-family: Roboto, Helvetica Neue, Arial, sans-serif; } .ds-hero-eyebrow { display: flex; align-items: center; gap: 10px; color: #0B1220; font-size: 16px; font-weight: 500; letter-spacing: 0.15px; } .ds-hero-well { display: inline-flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 50%; background: rgba(11,18,32,0.12); } .ds-hero-title { margin: 0; color: #0B1220; font-size: 28px; font-weight: 400; line-height: 1.29; } .ds-hero-sub { margin: 0; color: #0B1220; font-size: 14px; line-height: 1.43; } .ds-hero-btn { height: 40px; border: none; border-radius: 999px; background: #FFFFFF; color: #0F172A; font-family: inherit; font-size: 14px; font-weight: 500; cursor: pointer; transition: background 160ms ease; } .ds-hero-btn:hover { background: #EAF2FF; } .ds-hero-btn:focus-visible { outline: 2px solid #0B1220; outline-offset: 2px; }"
     },
     {
       "name": "Section Card",
@@ -330,7 +495,7 @@
       "refersTo": "chat-bubble-user",
       "description": "18dp conversational surface. Blue Mist for the user, surfaceVariant for the assistant, tertiaryContainer for tool results.",
       "html": "<div class=\"ds-bubble-row user\"><div class=\"ds-bubble user\">Clean up the voice audio and explain what changed.</div></div><div class=\"ds-bubble-row\"><div class=\"ds-bubble assistant\"><span class=\"ds-tool-head\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"#0F172A\" aria-hidden=\"true\"><path d=\"M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z\"/></svg>Voice clean-up</span>Noise floor reduced by 6 dB. No clipping detected.</div></div>",
-      "css": ".ds-bubble-row { display: flex; margin-bottom: 10px; font-family: Roboto, Helvetica Neue, Arial, sans-serif; } .ds-bubble-row.user { justify-content: flex-end; } .ds-bubble { max-width: 88%; padding: 11px 14px; border-radius: 18px; font-size: 14px; line-height: 1.43; letter-spacing: 0.25px; } .ds-bubble.user { background: #EAF2FF; color: #0F172A; } .ds-bubble.assistant { max-width: 96%; background: #E7E0EC; color: #0F172A; } .ds-tool-head { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 14px; font-weight: 500; }"
+      "css": ".ds-bubble-row { display: flex; margin-bottom: 10px; font-family: Roboto, Helvetica Neue, Arial, sans-serif; } .ds-bubble-row.user { justify-content: flex-end; } .ds-bubble { max-width: 88%; padding: 11px 14px; border-radius: 18px; font-size: 14px; line-height: 1.43; letter-spacing: 0.25px; } .ds-bubble.user { background: #EAF2FF; color: #0F172A; } .ds-bubble.assistant { max-width: 96%; background: #E7ECF3; color: #0F172A; } .ds-tool-head { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; font-size: 14px; font-weight: 500; }"
     },
     {
       "name": "Skill Row",
@@ -338,7 +503,7 @@
       "refersTo": "skill-row",
       "description": "The only elevated, tappable row: 34dp icon well, name, description, limitation, trailing check when selected.",
       "html": "<button class=\"ds-skill\"><span class=\"ds-skill-well\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"#0F172A\" aria-hidden=\"true\"><path d=\"M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z\"/></svg></span><span class=\"ds-skill-body\"><span class=\"ds-skill-name\">Automatic subtitles</span><span class=\"ds-skill-desc\">Transcribe speech and write caption cues onto the timeline.</span><span class=\"ds-skill-limit\">Up to 1,000 characters of instructions.</span></span><svg class=\"ds-skill-check\" width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"#6AA7FF\" aria-hidden=\"true\"><path d=\"M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z\"/></svg></button>",
-      "css": ".ds-skill { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 12px; border: none; border-radius: 12px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(15,23,42,0.12); font-family: Roboto, Helvetica Neue, Arial, sans-serif; text-align: left; cursor: pointer; transition: box-shadow 160ms ease, background 160ms ease; } .ds-skill:hover { box-shadow: 0 2px 6px rgba(15,23,42,0.16); } .ds-skill:focus-visible { outline: 2px solid #6AA7FF; outline-offset: 2px; } .ds-skill-well { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 34px; height: 34px; border-radius: 50%; background: #E7E0EC; } .ds-skill-body { display: flex; flex-direction: column; gap: 1px; flex: 1; } .ds-skill-name { color: #0F172A; font-size: 14px; line-height: 1.43; } .ds-skill-desc { color: #475569; font-size: 12px; line-height: 1.33; letter-spacing: 0.4px; } .ds-skill-limit { color: #475569; font-size: 11px; font-weight: 500; } .ds-skill-check { flex: none; }"
+      "css": ".ds-skill { display: flex; align-items: center; gap: 10px; width: 100%; padding: 9px 12px; border: none; border-radius: 12px; background: #FFFFFF; box-shadow: 0 1px 2px rgba(15,23,42,0.12); font-family: Roboto, Helvetica Neue, Arial, sans-serif; text-align: left; cursor: pointer; transition: box-shadow 160ms ease, background 160ms ease; } .ds-skill:hover { box-shadow: 0 2px 6px rgba(15,23,42,0.16); } .ds-skill:focus-visible { outline: 2px solid #6AA7FF; outline-offset: 2px; } .ds-skill-well { display: inline-flex; align-items: center; justify-content: center; flex: none; width: 34px; height: 34px; border-radius: 50%; background: #E7ECF3; } .ds-skill-body { display: flex; flex-direction: column; gap: 1px; flex: 1; } .ds-skill-name { color: #0F172A; font-size: 14px; line-height: 1.43; } .ds-skill-desc { color: #475569; font-size: 12px; line-height: 1.33; letter-spacing: 0.4px; } .ds-skill-limit { color: #475569; font-size: 11px; font-weight: 500; } .ds-skill-check { flex: none; }"
     },
     {
       "name": "Composer Field",
@@ -360,9 +525,9 @@
       "name": "Assist Chip",
       "kind": "chip",
       "refersTo": "chip-assist",
-      "description": "32dp chip that represents a chosen Skill, with a leading icon and a trailing remove glyph.",
-      "html": "<button class=\"ds-chip\"><svg width=\"16\" height=\"16\" viewBox=\"0 0 24 24\" fill=\"#0F172A\" aria-hidden=\"true\"><path d=\"M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z\"/></svg>Voice clean-up<span class=\"ds-chip-x\">&times;</span></button>",
-      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 8px; height: 32px; padding: 0 12px; border: 1px solid #CBD5E1; border-radius: 8px; background: #FFFFFF; color: #0F172A; font-family: Roboto, Helvetica Neue, Arial, sans-serif; font-size: 14px; font-weight: 500; letter-spacing: 0.1px; cursor: pointer; transition: background 160ms ease, border-color 160ms ease; } .ds-chip:hover { background: #F5F7FB; border-color: #6AA7FF; } .ds-chip:focus-visible { outline: 2px solid #6AA7FF; outline-offset: 2px; } .ds-chip-x { color: #475569; font-size: 16px; line-height: 1; }"
+      "description": "48dp chip that represents a chosen Skill, with a leading icon and a trailing close glyph. The whole chip removes the Skill and announces that action.",
+      "html": "<button class=\"ds-chip\"><svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"#0F172A\" aria-hidden=\"true\"><path d=\"M12 14a3 3 0 0 0 3-3V5a3 3 0 0 0-6 0v6a3 3 0 0 0 3 3zm5-3a5 5 0 0 1-10 0H5a7 7 0 0 0 6 6.92V21h2v-3.08A7 7 0 0 0 19 11h-2z\"/></svg>Voice clean-up<svg width=\"18\" height=\"18\" viewBox=\"0 0 24 24\" fill=\"#475569\" aria-hidden=\"true\"><path d=\"M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z\"/></svg></button>",
+      "css": ".ds-chip { display: inline-flex; align-items: center; gap: 8px; min-height: 48px; padding: 0 12px; border: 1px solid #CBD5E1; border-radius: 8px; background: #FFFFFF; color: #0F172A; font-family: Roboto, Helvetica Neue, Arial, sans-serif; font-size: 14px; font-weight: 500; letter-spacing: 0.1px; cursor: pointer; transition: background 160ms ease, border-color 160ms ease; } .ds-chip:hover { background: #F5F7FB; border-color: #64748B; } .ds-chip:focus-visible { outline: 2px solid #6AA7FF; outline-offset: 2px; }"
     }
   ],
   "narrative": {
@@ -383,12 +548,12 @@
       },
       {
         "name": "The Role-Only Rule",
-        "body": "Every color comes from MaterialTheme.colorScheme. The only hard-coded literals allowed are white-on-hero text and the black scrim behind subtitle overlays.",
+        "body": "Every color comes from MaterialTheme.colorScheme. The only hard-coded literals allowed are currentColor icon tints inside the hero and the black scrim behind subtitle overlays.",
         "section": "colors"
       },
       {
-        "name": "The Drift Rule",
-        "body": "theme/Color.kt still declares four unused indigo tokens (IndigoPrimary, IndigoPrimaryDark, IndigoContainer, IndigoContainerDark). They are not part of this system and no screen references them. Do not treat them as brand intent without an explicit decision.",
+        "name": "The Complete-Role Rule",
+        "body": "Every Material 3 role the app reads is defined in Theme.kt, in both schemes. An undefined role silently falls back to baseline Material lavender, and one lavender bubble breaks the whole palette argument.",
         "section": "colors"
       },
       {
@@ -420,15 +585,17 @@
       "Do keep the 20dp content margin outside the Editor, and 16dp inside it.",
       "Do show execution state in Mixer Teal and interactive state in Signal Blue.",
       "Do use full pills for actions and 12dp corners for containers.",
-      "Do preserve the fixed bottom navigation bar as the only persistent chrome."
+      "Do preserve the fixed bottom navigation bar as the only persistent chrome.",
+      "Do give every touch target at least 48dp, including selected-Skill chips.",
+      "Do make a destructive edit undoable, and reserve a dialog for what undo cannot restore."
     ],
     "donts": [
       "Don't add a second accent hue; the two-signal pair is the whole palette argument.",
       "Don't put white Body text on Signal Blue (2.45:1). Use Booth Ink (7.65:1).",
       "Don't introduce a custom font family or a display face.",
       "Don't add shadows to static cards, or a second elevated row style beyond the Skill row.",
-      "Don't rely on Material fallback roles that were never defined in Theme.kt - tertiary, tertiaryContainer, outline, outlineVariant, surfaceVariant, error, and errorContainer currently resolve to Material 3 baseline purple, visibly off-brand. Define a role before using it in new work.",
-      "Don't register design tokens in Color.kt without wiring them into Theme.kt; the unused indigo declarations are the cautionary example.",
+      "Don't rely on Material fallback roles: every role a screen reads must be defined in Theme.kt in both schemes, or it resolves to baseline lavender.",
+      "Don't register design tokens in Color.kt without wiring them into Theme.kt; an unused token is a claim the UI does not keep.",
       "Don't pin a second app bar under the bottom navigation; top bars scroll with content in this system.",
       "Don't fabricate testimonials, benchmarks, or marketing claims in UI copy."
     ]

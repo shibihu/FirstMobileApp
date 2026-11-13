@@ -698,6 +698,17 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         _uiState.update { it.copy(editorMessage = null) }
     }
 
+    /** Restores a timeline snapshot captured before a destructive edit, for Undo. */
+    fun restoreTimeline(snapshot: EditorTimelineState) {
+        _uiState.update {
+            it.copy(
+                editorTimeline = snapshot,
+                playheadMs = snapshot.playheadMs,
+                seekRequestId = it.seekRequestId + 1,
+            )
+        }
+    }
+
     private fun updateTimeline(transform: (EditorTimelineState) -> EditorTimelineState) {
         _uiState.update { current ->
             val timeline = transform(current.editorTimeline)

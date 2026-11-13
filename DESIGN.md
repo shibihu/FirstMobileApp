@@ -17,6 +17,20 @@ colors:
   panel-navy: "#111827"
   dark-paper: "#E2E8F0"
   dark-slate: "#CBD5E1"
+  teal-deep: "#0F766E"
+  teal-container: "#CCFBF1"
+  teal-container-ink: "#134E4A"
+  bench-surface-variant: "#E7ECF3"
+  bench-outline: "#64748B"
+  bench-outline-variant: "#CBD5E1"
+  surface-container: "#F1F5F9"
+  booth-surface-variant: "#1E293B"
+  booth-container: "#131C2A"
+  error-red: "#B3261E"
+  error-container: "#FEE4E2"
+  error-container-ink: "#7A271A"
+  error-red-dark: "#F2B8B5"
+  error-container-dark: "#8C1D18"
 typography:
   headline-medium:
     fontFamily: "Roboto, Helvetica Neue, Arial, sans-serif"
@@ -134,7 +148,7 @@ components:
     padding: "16px"
   card-hero:
     backgroundColor: "{colors.signal-blue}"
-    textColor: "{colors.set-white}"
+    textColor: "{colors.booth-ink}"
     rounded: "{rounded.hero}"
     padding: "20px"
   stat-card:
@@ -212,24 +226,34 @@ Cool, instrument-grade blues on near-white or near-black neutrals. No warm hue a
 - **Blue Mist** (#EAF2FF): Primary container. User chat bubbles, selected Skill icon wells.
 
 ### Secondary
-- **Mixer Teal** (#5EEAD4): Identical value in both themes. Reserved for tool and execution context: completed tool markers, `tertiary` accents such as scene markers. It is a signal color, not decoration.
+- **Mixer Teal Container** (#CCFBF1 light / #134E4A dark): Tool-result bubbles and selected Skill wells. Teal says "a Skill ran", not "look here".
+
+### Tertiary
+- **Mixer Teal Deep** (#0F766E): Light-theme tertiary for text and small marks — scene-marker timestamps, tool-row headings. The light teal is too faint to read on white, so light theme uses its deep step. Dark theme reuses **Mixer Teal** (#5EEAD4), which reads at 13.06:1 on Booth Navy.
 
 ### Neutral
 - **Bench White** (#F5F7FB): Light-theme app background. Slightly cool, one step off pure white so that white cards lift without a shadow.
-- **Set White** (#FFFFFF): Light-theme surface. Every Card, navigation bar, and header chip sits on it.
+- **Set White** (#FFFFFF): Light-theme surface. Every Card and navigation bar sits on it.
 - **Bench Ink** (#0F172A): Light-theme primary text and hero body text. 16.65:1 on Bench White.
 - **Slate Grey** (#475569): Light-theme secondary text: durations, filenames, helper lines, empty-state copy. 7.07:1 on Bench White.
+- **Bench Surface Variant** (#E7ECF3): Assistant bubbles, unselected Skill wells. A cool grey, never Material's lavender.
+- **Bench Outline** (#64748B): Field borders, ruler ticks. 4.9:1 on white so the boundary is visible, not implied.
+- **Bench Outline Variant** (#CBD5E1): Dividers and chip borders only.
+- **Surface Container Family** (#F1F5F9 / #E9EFF6 / #E2E8F0): The navigation bar and filled cards pick their tone from here, so tonal depth stays in the same cool family.
 - **Booth Navy** (#090E17): Dark-theme background. Near-black with a blue cast rather than pure black.
 - **Panel Navy** (#111827): Dark-theme surface for cards and the navigation bar.
 - **Dark Paper** (#E2E8F0): Dark-theme primary text.
 - **Dark Slate** (#CBD5E1): Dark-theme secondary text.
 
+### Error
+- **Error Red** (#B3261E) on Set White for light, **Error Red Dark** (#F2B8B5) on Booth Navy for dark, with matching containers (#FEE4E2 / #8C1D18). Failure bubbles and inline error lines use the container; icons and short error text use the role itself. Error never borrows Mixer Teal.
+
 ### Named Rules
 **The Two-Signal Rule.** Signal Blue means "this is the current job". Mixer Teal means "this is execution state". Neither color is ever used to fill space or add cheer.
 
-**The Role-Only Rule.** Every color comes from `MaterialTheme.colorScheme`. The only hard-coded literals allowed are white-on-hero text and the black scrim behind subtitle overlays.
+**The Role-Only Rule.** Every color comes from `MaterialTheme.colorScheme`. The only hard-coded literals allowed are currentColor icon tints inside the hero and the black scrim behind subtitle overlays.
 
-**The Drift Rule.** `theme/Color.kt` still declares four unused indigo tokens (`IndigoPrimary`, `IndigoPrimaryDark`, `IndigoContainer`, `IndigoContainerDark`). They are not part of this system and no screen references them. Do not treat them as brand intent without an explicit decision.
+**The Complete-Role Rule.** Every Material 3 role the app reads is defined in `Theme.kt`, in both schemes. An undefined role silently falls back to baseline Material lavender, and one lavender bubble breaks the whole palette argument.
 
 ## Typography
 
@@ -269,7 +293,7 @@ Top app bars are composed inside the scrolling column rather than pinned in a `S
 
 Flat by default. Section cards are filled `Card`s at zero elevation; separation comes from Set White panels on Bench White background, not from shadow. Elevation signals interaction state or fixed position, never hierarchy: `ElevatedCard` appears only for the Skill selection rows inside the composer, and the composer surface uses 2dp tonal elevation because it stays pinned over scrolling content. The top app bars are flat. There is no glow, no gradient shadow, and no stacked-shadow vocabulary.
 
-One atmospheric gradient exists: the Dashboard hero paints a linear gradient from Signal Blue at 90% alpha to Blue Mist at 70% alpha, inside a 24dp card. It is the single expressive moment in the app.
+One atmospheric gradient exists: the Dashboard hero paints a linear gradient from Signal Blue to the same hue at 72% alpha, inside a 24dp card. It is the single expressive moment in the app.
 
 ### Named Rules
 **The Flat-At-Rest Rule.** Surfaces are flat until they are interactive, floating, or in motion. A shadow on a static card is a defect, not a flourish.
@@ -278,7 +302,7 @@ One atmospheric gradient exists: the Dashboard hero paints a linear gradient fro
 
 Pills for actions, rounded rectangles for containers, circles for icons and identity. Action buttons, outlined buttons, and text buttons are fully pill-shaped (Material 3 `Shapes.Full`). Cards keep Material's 12dp. Radius grows with the conversational, "soft" role of the surface rather than with its size: media 8dp, cards 12dp, chat bubbles 18dp, the composer field 22dp, the hero 24dp. Text fields stay nearly square at Material's 4dp so input reads as form, not as chat. The subtitle overlay is the smallest radius at 6dp — it must hug the video, not float above it.
 
-Icon wells are 34–36dp circles with tinted fills (Signal Blue container, `surfaceVariant`, or white at 15% alpha over the hero). Nothing is clipped at an angle; there is no diagonal, no notch, and no custom silhouette.
+Icon wells are 34–36dp circles with tinted fills (Signal Blue container, `surfaceVariant`, or Booth Ink at 12% alpha over the hero). Nothing is clipped at an angle; there is no diagonal, no notch, and no custom silhouette.
 
 ### Named Rules
 **The Role-Not-Scale Rule.** Pick a radius by what the surface does — media, container, conversation, hero — not by how large it is. Two same-size elements may legitimately differ.
@@ -289,13 +313,13 @@ Icon wells are 34–36dp circles with tinted fills (Signal Blue container, `surf
 - **Shape:** Pill at every size (999px effective, Material `Shapes.Full`).
 - **Primary:** Signal Blue fill, Booth Ink label, Label Large text, Material's 40dp height and 24dp side padding. Icon plus 8dp spacer plus label when an icon is present.
 - **Tall primary:** Dashboard quick actions and the send control rise to 52dp so the thumb target survives one-handed use.
-- **Hero primary:** Inside the hero gradient the primary button inverts to Set White fill with Booth Ink label, so it stays the strongest element on a blue field.
+- **Hero primary:** Inside the hero the primary button inverts to a surface fill with on-surface label, so it stays the strongest element on a blue field.
 - **Secondary:** OutlinedButton with a neutral 1dp outline and Signal Blue label; used for paired or reversible actions (Cancel export, Import SRT, Split at playhead, Import audio).
-- **Tertiary:** TextButton in Signal Blue for retry, dismiss, and destructive-light actions ("Remove clip", "Delete cue", "Clear token").
+- **Tertiary:** TextButton in Signal Blue for retry, dismiss, and reversible actions ("Remove clip", "Delete cue", "Clear token"). Destructive text buttons (Delete clip) take the error role instead and never sit beside a constructive one.
 
 ### Chips
-- **Style:** Material `AssistChip` with an 8dp radius, Set White fill, neutral outline, Label Large text, and a 16dp leading Skill icon. Selected Skills appear as a horizontally scrolling row with a trailing "×" that removes them.
-- **State:** Selection is expressed by the chip existing at all — the chip row only renders chosen Skills. Selection inside the expanded panel instead uses a Signal Blue container well and a trailing check.
+- **Style:** 8dp radius, surface fill, `outlineVariant` border, Label Large text, and an 18dp leading Skill icon. Chosen Skills appear as a horizontally scrolling row, each with a trailing close glyph.
+- **State:** Selection is expressed by the chip existing at all — the chip row only renders chosen Skills. Each chip is at least 48dp tall, and its click action is announced as "Remove <skill>". Selection inside the expanded panel instead uses a Signal Blue container well and a trailing check.
 
 ### Cards / Containers
 - **Corner Style:** 12dp by default (24dp for the hero).
@@ -313,15 +337,16 @@ Icon wells are 34–36dp circles with tinted fills (Signal Blue container, `surf
 Bottom `NavigationBar`, five destinations: Dashboard, Media, Editor, AI, Settings. Default item is Slate Grey icon and label at Label Medium; the selected item takes Material's pill indicator in Blue Mist with Signal Blue icon and Bench Ink label. AI Studio adds a two-line top bar: title plus a Label Small subtitle carrying backend and clip status, truncated to one line.
 
 ### Hero Panel (signature)
-The only expressive surface in the app: a 24dp card containing a Signal Blue → Blue Mist gradient, a 36dp white-at-15% circle holding the sparkle icon, a Title Medium eyebrow ("Creative workspace"), a Headline Medium primary line that is either the imported filename or "Start an edit", a Body Medium status line, and a full-width white pill button. It states the current job in one glance and offers exactly one next action.
-
-**Known contrast exception:** white text on Signal Blue measures 2.45:1. It is the incumbent treatment and is retained here as documented, not endorsed; new surfaces should use Booth Ink on Signal Blue, which measures 7.65:1.
+The only expressive surface in the app: a 24dp card containing a Signal Blue gradient, a 36dp Booth-Ink-at-12% circle holding the sparkle icon, a Title Medium eyebrow ("Creative workspace"), a Headline Medium primary line that is either the imported filename or "Start an edit", a Body Medium status line, and a full-width surface pill button. Every word and glyph on it is Booth Ink, which measures 7.65:1 against Signal Blue in light and 10.46:1 against Moonlit Blue in dark. It states the current job in one glance and offers exactly one next action.
 
 ### Stat Row (signature)
 Three equal-width cards, each `weight(1f)`, 12dp apart. Value in Headline Small, label in Body Small Slate Grey, centered. Missing data renders an em dash, never "0" or "unknown", so absence reads as absence.
 
 ### Chat Bubbles (signature)
-Full-width column with an 88% (user) or 96% (other) surface. User: Blue Mist fill. Assistant: `surfaceVariant` fill. Tool: `tertiaryContainer` fill with a 16dp Skill icon, skill name in Label Large, and a 14dp progress ring or check beside it. Failed: `errorContainer` with a TextButton "Retry". Radius 18dp, padding 11dp vertical and 14dp horizontal, Body Medium text.
+Full-width column with an 88% (user) or 96% (other) surface. User: Blue Mist fill. Assistant: `surfaceVariant` fill. Tool: `tertiaryContainer` fill — teal in both themes — with a 16dp Skill icon, skill name in Label Large, and a 14dp progress ring or check beside it. Failed: `errorContainer` with a TextButton "Retry". Radius 18dp, padding 11dp vertical and 14dp horizontal, Body Medium text.
+
+### Destructive Actions
+Deleting a clip, a cue, or an audio track is undoable: the action runs immediately and a snackbar offers Undo for ten seconds, restoring the pre-delete timeline snapshot. Clearing the server access token is irreversible from the phone, so it asks for confirmation in a dialog instead. Status and error messages surface as snackbars, never as a `TextButton` whose only action is dismissal.
 
 ### Skill Row (signature)
 `ElevatedCard` at full width: 34dp circle well, skill name in Body Medium, description in Body Small, limitation in Label Small Slate Grey, trailing check when selected. This is the only elevated, tappable row in the app and the only place where a shadow carries affordance.
@@ -337,13 +362,15 @@ Full-width column with an 88% (user) or 96% (other) surface. User: Blue Mist fil
 - **Do** show execution state in Mixer Teal and interactive state in Signal Blue.
 - **Do** use full pills for actions and 12dp corners for containers.
 - **Do** preserve the fixed bottom navigation bar as the only persistent chrome.
+- **Do** give every touch target at least 48dp, including selected-Skill chips.
+- **Do** make a destructive edit undoable, and reserve a dialog for what undo cannot restore.
 
 ### Don't:
 - **Don't** add a second accent hue; the two-signal pair is the whole palette argument.
 - **Don't** put white Body text on Signal Blue (2.45:1). Use Booth Ink (7.65:1).
 - **Don't** introduce a custom font family or a display face.
 - **Don't** add shadows to static cards, or a second elevated row style beyond the Skill row.
-- **Don't** rely on Material fallback roles that were never defined in `Theme.kt` — `tertiary`, `tertiaryContainer`, `outline`, `outlineVariant`, `surfaceVariant`, `error`, and `errorContainer` currently resolve to Material 3 baseline purple, visibly off-brand. Define a role before using it in new work.
-- **Don't** register design tokens in `Color.kt` without wiring them into `Theme.kt`; the unused indigo declarations are the cautionary example.
+- **Don't** rely on Material fallback roles: every role a screen reads must be defined in `Theme.kt` in both schemes, or it resolves to baseline lavender.
+- **Don't** register design tokens in `Color.kt` without wiring them into `Theme.kt`; an unused token is a claim the UI does not keep.
 - **Don't** pin a second app bar under the bottom navigation; top bars scroll with content in this system.
 - **Don't** fabricate testimonials, benchmarks, or marketing claims in UI copy.

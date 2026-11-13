@@ -18,39 +18,73 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.example.nativestarter.R
+import com.example.nativestarter.domain.editor.EditorTimelineState
 import com.example.nativestarter.domain.editor.SubtitleCue
 import com.example.nativestarter.ui.components.VideoPreview
 import com.example.nativestarter.viewmodel.AppViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun EditorScreen(viewModel: AppViewModel) {
+fun EditorScreen(
+    viewModel: AppViewModel,
+    snackbarHostState: SnackbarHostState,
+) {
     val state = viewModel.uiState.collectAsState().value
     val video = state.importedVideo
+    val scope = rememberCoroutineScope()
+
+    // Destructive edits keep an undo point for as long as the snackbar shows.
+    val deleteWithUndo: (String, () -> Unit) -> Unit = { message, delete ->
+        val snapshot = viewModel.uiState.value.editorTimeline
+        delete()
+        scope.launch {
+            val result = snackbarHostState.showSnackbar(
+                message = message,
+                actionLabel = "Undo",
+                duration = SnackbarDuration.Long,
+            )
+            if (result == SnackbarResult.ActionPerformed) viewModel.restoreTimeline(snapshot)
+        }
+    }
+
+    LaunchedEffect(state.editorMessage) {
+        val message = state.editorMessage ?: return@LaunchedEffect
+        viewModel.dismissEditorMessage()
+        snackbarHostState.showSnackbar(message)
+    }
+
+    LaunchedEffect(state.exportError) {
+        val error = state.exportError ?: return@LaunchedEffect
+        viewModel.clearExportError()
+        snackbarHostState.showSnackbar(error, withDismissAction = true, duration = SnackbarDuration.Long)
+    }
     val audioPicker = rememberLauncherForActivityResult(ActivityResultContracts.OpenDocument()) { uri ->
         uri?.let(viewModel::importAudio)
     }
@@ -107,11 +141,6 @@ fun EditorScreen(viewModel: AppViewModel) {
                 )
                 Text("Rendering ${state.exportProgress}%", style = MaterialTheme.typography.labelMedium)
             }
-            state.exportError?.let { error ->
-                TextButton(onClick = viewModel::clearExportError) {
-                    Text(error, color = MaterialTheme.colorScheme.error)
-                }
-            }
             Text(
                 text = "${video.displayName}  •  ${video.videoMimeType ?: "video codec unknown"}${video.audioMimeTypes.joinToString(prefix = if (video.audioMimeTypes.isEmpty()) "" else "  •  ")}",
                 style = MaterialTheme.typography.bodySmall,
@@ -123,7 +152,7 @@ fun EditorScreen(viewModel: AppViewModel) {
                 onSelect = viewModel::selectSegment,
                 onTrim = viewModel::trimSelectedSegment,
                 onSplit = viewModel::splitAtPlayhead,
-                onDelete = viewModel::deleteSelectedSegment,
+                onDelete = { deleteWithUndo("Clip deleted") { viewModel.deleteSelectedSegment() } },
             )
             if (state.editorTimeline.sceneMarkersMs.isNotEmpty()) {
                 Text(
@@ -136,7 +165,7 @@ fun EditorScreen(viewModel: AppViewModel) {
                 clips = state.editorTimeline.audioSegments,
                 onImport = { audioPicker.launch(arrayOf("audio/*")) },
                 onVolume = viewModel::setAudioVolume,
-                onDelete = viewModel::deleteAudio,
+                onDelete = { id, name -> deleteWithUndo("Removed $name") { viewModel.deleteAudio(id) } },
             )
             SubtitlePanel(
                 cues = state.editorTimeline.subtitleCues,
@@ -144,20 +173,17 @@ fun EditorScreen(viewModel: AppViewModel) {
                 playheadMs = state.playheadMs,
                 onAdd = viewModel::addSubtitle,
                 onUpdate = viewModel::updateSubtitle,
-                onDelete = viewModel::deleteSubtitle,
+                onDelete = { id -> deleteWithUndo("Subtitle cue deleted") { viewModel.deleteSubtitle(id) } },
                 onImport = { srtPicker.launch(arrayOf("application/x-subrip", "text/plain", "application/octet-stream")) },
                 onExport = { srtSaver.launch("subtitles.srt") },
             )
-            state.editorMessage?.let { message ->
-                TextButton(onClick = viewModel::dismissEditorMessage) { Text(message) }
-            }
         }
     }
 }
 
 @Composable
 private fun TimelinePanel(
-    state: com.example.nativestarter.domain.editor.EditorTimelineState,
+    state: EditorTimelineState,
     onSeek: (Long) -> Unit,
     onSelect: (String) -> Unit,
     onTrim: (Long, Long) -> Unit,
@@ -220,7 +246,12 @@ private fun TimelinePanel(
                     OutlinedButton(onClick = onSplit, enabled = state.playheadMs > 0L && state.playheadMs < duration) {
                         Text("Split at playhead")
                     }
-                    OutlinedButton(onClick = onDelete) { Text("Delete clip") }
+                }
+                TextButton(
+                    onClick = onDelete,
+                    colors = ButtonDefaults.textButtonColors(contentColor = MaterialTheme.colorScheme.error),
+                ) {
+                    Text("Delete clip")
                 }
             }
         }
@@ -252,7 +283,7 @@ private fun AudioPanel(
     clips: List<com.example.nativestarter.domain.editor.AudioSegment>,
     onImport: () -> Unit,
     onVolume: (String, Float) -> Unit,
-    onDelete: (String) -> Unit,
+    onDelete: (String, String) -> Unit,
 ) {
     Card(modifier = Modifier.fillMaxWidth()) {
         Column(modifier = Modifier.padding(14.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -266,7 +297,7 @@ private fun AudioPanel(
             clips.forEach { clip ->
                 Text("${clip.name} • ${formatDuration(clip.durationMs)} • starts ${formatDuration(clip.timelineStartMs)}")
                 Slider(value = clip.volume, onValueChange = { onVolume(clip.id, it) }, valueRange = 0f..2f)
-                TextButton(onClick = { onDelete(clip.id) }) { Text("Remove ${clip.name}") }
+                TextButton(onClick = { onDelete(clip.id, clip.name) }) { Text("Remove ${clip.name}") }
             }
         }
     }

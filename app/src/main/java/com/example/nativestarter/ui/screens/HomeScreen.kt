@@ -4,6 +4,8 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ExperimentalLayoutApi
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +23,7 @@ import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.filled.Timeline
 import androidx.compose.material.icons.filled.VideoLibrary
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -32,7 +35,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.nativestarter.R
@@ -68,40 +71,43 @@ fun HomeScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .background(
-                        brush = androidx.compose.ui.graphics.Brush.linearGradient(
+                        brush = Brush.linearGradient(
                             colors = listOf(
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.9f),
-                                MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
+                                MaterialTheme.colorScheme.primary,
+                                MaterialTheme.colorScheme.primary.copy(alpha = 0.72f),
                             ),
                         ),
                     )
                     .padding(20.dp),
             ) {
                 Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    ) {
                         Box(
                             modifier = Modifier
                                 .size(36.dp)
                                 .clip(CircleShape)
-                                .background(Color.White.copy(alpha = 0.15f)),
+                                .background(MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.12f)),
                             contentAlignment = Alignment.Center,
                         ) {
                             Icon(
                                 imageVector = Icons.Filled.AutoAwesome,
                                 contentDescription = null,
-                                tint = Color.White,
+                                tint = MaterialTheme.colorScheme.onPrimary,
                             )
                         }
                         Text(
                             text = "Creative workspace",
-                            color = Color.White,
+                            color = MaterialTheme.colorScheme.onPrimary,
                             style = MaterialTheme.typography.titleMedium,
                         )
                     }
                     Text(
                         text = state.importedVideo?.displayName ?: "Start an edit",
                         style = MaterialTheme.typography.headlineMedium,
-                        color = Color.White,
+                        color = MaterialTheme.colorScheme.onPrimary,
                     )
                     Text(
                         text = if (state.importedVideo == null) {
@@ -110,11 +116,15 @@ fun HomeScreen(
                             "${state.importedVideo.durationMs?.let(::formatDuration) ?: "Duration unknown"} • Video ready to preview"
                         },
                         style = MaterialTheme.typography.bodyMedium,
-                        color = Color.White.copy(alpha = 0.9f),
+                        color = MaterialTheme.colorScheme.onPrimary,
                     )
                     Button(
                         onClick = if (state.importedVideo == null) onImportMedia else onContinueEditing,
                         modifier = Modifier.fillMaxWidth(),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = MaterialTheme.colorScheme.surface,
+                            contentColor = MaterialTheme.colorScheme.onSurface,
+                        ),
                     ) {
                         Icon(Icons.Filled.PlayArrow, contentDescription = null)
                         Spacer(Modifier.size(8.dp))
@@ -150,11 +160,11 @@ fun HomeScreen(
         Card(modifier = Modifier.fillMaxWidth()) {
             Column(modifier = Modifier.padding(20.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text(text = "Quick actions", style = MaterialTheme.typography.titleMedium)
-                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    ActionButton(label = "Import", icon = Icons.Filled.VideoLibrary, onClick = onImportMedia)
-                    ActionButton(label = "Editor", icon = Icons.Filled.Timeline, onClick = onContinueEditing)
-                    ActionButton(label = "AI tools", icon = Icons.Filled.AutoAwesome, onClick = onOpenAi)
-                }
+                QuickActions(
+                    onImportMedia = onImportMedia,
+                    onContinueEditing = onContinueEditing,
+                    onOpenAi = onOpenAi,
+                )
             }
         }
 
@@ -176,6 +186,23 @@ fun HomeScreen(
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalLayoutApi::class)
+@Composable
+private fun QuickActions(
+    onImportMedia: () -> Unit,
+    onContinueEditing: () -> Unit,
+    onOpenAi: () -> Unit,
+) {
+    FlowRow(
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+        ActionButton(label = "Import", icon = Icons.Filled.VideoLibrary, onClick = onImportMedia)
+        ActionButton(label = "Editor", icon = Icons.Filled.Timeline, onClick = onContinueEditing)
+        ActionButton(label = "AI tools", icon = Icons.Filled.AutoAwesome, onClick = onOpenAi)
     }
 }
 
@@ -208,7 +235,7 @@ private fun ActionButton(
         onClick = onClick,
         modifier = Modifier.height(52.dp),
     ) {
-        Icon(icon, contentDescription = null)
+        Icon(icon, contentDescription = null, modifier = Modifier.size(18.dp))
         Spacer(Modifier.size(8.dp))
         Text(label)
     }

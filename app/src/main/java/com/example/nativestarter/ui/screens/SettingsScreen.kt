@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
@@ -99,6 +100,7 @@ private fun BackendSection(
 ) {
     var urlInput by remember(baseUrl) { mutableStateOf(baseUrl) }
     var tokenInput by remember { mutableStateOf("") }
+    var confirmClearToken by remember { mutableStateOf(false) }
     SectionCard(title = "AIClipStudio backend") {
         OutlinedTextField(
             value = urlInput,
@@ -126,7 +128,9 @@ private fun BackendSection(
             OutlinedButton(onClick = onTest, enabled = !busy && baseUrl.isNotBlank()) {
                 Text(if (busy) "Checking…" else "Test connection")
             }
-            if (tokenConfigured) TextButton(onClick = onClearToken) { Text("Clear token") }
+            if (tokenConfigured) {
+                TextButton(onClick = { confirmClearToken = true }) { Text("Clear token") }
+            }
         }
         message?.let {
             Text(
@@ -144,6 +148,29 @@ private fun BackendSection(
             "The backend needs its own AI provider configuration. Provider API keys are never stored in this app.",
             style = MaterialTheme.typography.bodySmall,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
+    if (confirmClearToken) {
+        AlertDialog(
+            onDismissRequest = { confirmClearToken = false },
+            title = { Text("Clear access token?") },
+            text = {
+                Text(
+                    "This deletes the saved server access token from this phone. " +
+                        "Protected backends will reject requests until you enter the token again.",
+                )
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        confirmClearToken = false
+                        onClearToken()
+                    },
+                ) { Text("Clear token") }
+            },
+            dismissButton = {
+                TextButton(onClick = { confirmClearToken = false }) { Text("Keep token") }
+            },
         )
     }
 }
