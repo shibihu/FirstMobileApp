@@ -3,6 +3,9 @@ package com.example.nativestarter.data
 import android.content.Context
 import android.net.Uri
 import org.json.JSONObject
+import com.example.nativestarter.data.caption.CaptionTaskApiException
+import com.example.nativestarter.data.caption.CaptionTaskSnapshot
+import com.example.nativestarter.data.caption.CaptionTasksApi
 import com.example.nativestarter.domain.assistant.AssistantMessage
 import com.example.nativestarter.domain.assistant.AssistantMessageRole
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +18,7 @@ import java.net.URL
 import java.net.URLEncoder
 import java.util.UUID
 
-class AiClipStudioApi(private val context: Context, private val settings: BackendSettings) {
+class AiClipStudioApi(private val context: Context, private val settings: BackendSettings) : CaptionTasksApi {
 
     private val contentResolver = context.contentResolver
 
@@ -69,6 +72,92 @@ class AiClipStudioApi(private val context: Context, private val settings: Backen
                 .put("instructions", instructions.take(1000)),
         )
     }
+
+    // ---- asynchronous automatic caption jobs (primary workflow) -----------
+
+    /**
+     * POST /api/captions/jobs. The backend answers 202 with the persisted task
+     * document; duplicate submissions carrying one Idempotency-Key return the
+     * same task. Long transcription work happens server-side, independent of
+     * this HTTP request.
+     */
+    override suspend fun submitCaptionJob(jobId: String, instructions: String, idempotencyKey: String): CaptionTaskSnapshot =
+        withContext(Dispatchers.IO) {
+            require(jobId.isNotBlank()) { "A backend job id is required to submit a caption task." }
+            require(idempotencyKey.isNotBlank()) { "An idempotency key is required to submit a caption task." }
+            requestCaptionTask(
+                "POST",
+                "/api/captions/jobs",
+                body = JSONObject()
+                    .put("id", jobId)
+                    .put("instructions", instructions.take(1000)),
+                headers = mapOf("Idempotency-Key" to idempotencyKey),
+                readTimeoutMs = SUBMIT_READ_TIMEOUT_MS,
+            )
+        }
+
+    /** GET /api/captions/jobs/:taskId?id=:jobId — short timeouts, called at polling cadence. */
+    override suspend fun getCaptionTask(taskId: String, jobId: String): CaptionTaskSnapshot =
+        withContext(Dispatchers.IO) {
+            require(taskId.isNotBlank() && jobId.isNotBlank()) { "Caption status needs both a task id and a job id." }
+            requestCaptionTask("GET", captionTaskPath(taskId, jobId), readTimeoutMs = POLL_READ_TIMEOUT_MS)
+        }
+
+    /** DELETE /api/captions/jobs/:taskId?id=:jobId — real backend cancellation. */
+    override suspend fun cancelCaptionTask(taskId: String, jobId: String): CaptionTaskSnapshot =
+        withContext(Dispatchers.IO) {
+            require(taskId.isNotBlank() && jobId.isNotBlank()) { "Caption cancellation needs both a task id and a job id." }
+            requestCaptionTask("DELETE", captionTaskPath(taskId, jobId), readTimeoutMs = CANCEL_READ_TIMEOUT_MS)
+        }
+
+    /**
+     * Caption-task request/response handling: parses the public task document
+     * and maps structured backend errors onto [CaptionTaskApiException].
+     */
+    private fun requestCaptionTask(
+        method: String,
+        path: String,
+        body: JSONObject? = null,
+        headers: Map<String, String> = emptyMap(),
+        readTimeoutMs: Int,
+    ): CaptionTaskSnapshot {
+        val connection = openConnection(path, method, readTimeoutMs)
+        try {
+            headers.forEach { (name, value) -> connection.setRequestProperty(name, value) }
+            if (body != null) {
+                connection.doOutput = true
+                connection.setRequestProperty("Content-Type", "application/json; charset=utf-8")
+                connection.outputStream.use { it.write(body.toString().toByteArray(Charsets.UTF_8)) }
+            }
+            val code = connection.responseCode
+            val stream = if (code in 200..299) connection.inputStream else connection.errorStream
+            val payload = stream?.bufferedReader(Charsets.UTF_8)?.use { it.readText() }.orEmpty()
+            val json = runCatching { JSONObject(payload) }.getOrElse {
+                throw CaptionTaskApiException(
+                    httpStatus = code,
+                    errorCode = null,
+                    message = "Backend returned HTTP $code with an invalid JSON response.",
+                    retryable = isTransientStatus(code),
+                )
+            }
+            if (code !in 200..299) {
+                val structured = json.optJSONObject("error")
+                throw CaptionTaskApiException(
+                    httpStatus = code,
+                    errorCode = structured?.optString("code")?.takeIf(String::isNotBlank),
+                    message = structured?.optString("message")?.takeIf(String::isNotBlank)
+                        ?: "Backend returned HTTP $code.",
+                    retryable = structured?.optBoolean("retryable") ?: isTransientStatus(code),
+                )
+            }
+            return CaptionTaskSnapshot.parse(json)
+        } finally {
+            connection.disconnect()
+        }
+    }
+
+    private fun isTransientStatus(code: Int): Boolean =
+        code >= 500 || code == 408 || code == 429
 
     suspend fun chat(
         jobId: String,
@@ -139,7 +228,7 @@ class AiClipStudioApi(private val context: Context, private val settings: Backen
         }
     }
 
-    private fun openConnection(path: String, method: String): HttpURLConnection {
+    private fun openConnection(path: String, method: String, readTimeoutMs: Int = READ_TIMEOUT_MS): HttpURLConnection {
         val base = BackendSettings.normalizeBaseUrl(settings.baseUrl())
         return (buildEndpointUrl(base, path).openConnection() as HttpURLConnection).apply {
             requestMethod = method
@@ -175,6 +264,19 @@ class AiClipStudioApi(private val context: Context, private val settings: Backen
         private const val CONNECT_TIMEOUT_MS = 10_000
         private const val READ_TIMEOUT_MS = 60_000
         private const val COPY_BUFFER_SIZE = 64 * 1024
+
+        // Caption-job endpoints: submission uploads nothing, and status/cancel
+        // calls must never hang a poll loop, so their read timeouts stay short.
+        internal const val SUBMIT_READ_TIMEOUT_MS = 30_000
+        internal const val POLL_READ_TIMEOUT_MS = 15_000
+        internal const val CANCEL_READ_TIMEOUT_MS = 15_000
+
+        /** "api/captions/jobs/:taskId?id=:jobId" with both ids percent-encoded. */
+        internal fun captionTaskPath(taskId: String, jobId: String): String {
+            val encodedTask = URLEncoder.encode(taskId, Charsets.UTF_8.name())
+            val encodedJob = URLEncoder.encode(jobId, Charsets.UTF_8.name())
+            return "/api/captions/jobs/$encodedTask?id=$encodedJob"
+        }
 
         internal fun buildEndpointUrl(base: String, path: String): URL {
             val origin = BackendSettings.normalizeBaseUrl(base)

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.nativestarter.viewmodel.CaptionJobCoordinatorTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2026-11-18T04:34:00.058Z" hostname="localhost" time="4.199">
+  <properties/>
+  <testcase name="userCancelStopsPollingAndSendsBackendDelete" classname="com.example.nativestarter.viewmodel.CaptionJobCoordinatorTest" time="3.059"/>
+  <testcase name="retryableTaskFailureShowsRetryAction" classname="com.example.nativestarter.viewmodel.CaptionJobCoordinatorTest" time="0.049"/>
+  <testcase name="blankTaskIdAfterCrashResubmitsWithStoredIdempotencyKey" classname="com.example.nativestarter.viewmodel.CaptionJobCoordinatorTest" time="0.039"/>
+  <testcase name="unexpectedBackendStateMapsToUnknownAndPollsOn" classname="com.example.nativestarter.viewmodel.CaptionJobCoordinatorTest" time="0.211"/>
+  <testcase name="queuedTranscribingCompletedProducesTerminalSnapshotAndClearsRecord" classname="com.example.nativestarter.viewmodel.CaptionJobCoordinatorTest" time="0.034"/>
+  <testcase name="scopeCancellationStopsEverything" classname="com.example.nativestarter.viewmodel.CaptionJobCoordinatorTest" time="0.083"/>
+  <testcase name="extractingAudioThroughRenderingCompletes" classname="com.example.nativestarter.viewmodel.CaptionJobCoordinatorTest" time="0.068"/>
+  <testcase name="cancelWithFailingBackendStillLeavesRunningState" classname="com.example.nativestarter.viewmodel.CaptionJobCoordinatorTest" time="0.07"/>
+  <testcase name="nonRetryableSubmitErrorAbortsAndMarksStateNonRetryable" classname="com.example.nativestarter.viewmodel.CaptionJobCoordinatorTest" time="0.04"/>
+  <testcase name="pendingRecordWithTaskIdResumesPollingWithoutResubmitting" classname="com.example.nativestarter.viewmodel.CaptionJobCoordinatorTest" time="0.039"/>
+  <testcase name="failedTaskSurfacesBackendErrorAndRetryableFlag" classname="com.example.nativestarter.viewmodel.CaptionJobCoordinatorTest" time="0.053"/>
+  <testcase name="networkGiveUpEmitsRetryableErrorStateAndKeepsRecord" classname="com.example.nativestarter.viewmodel.CaptionJobCoordinatorTest" time="0.067"/>
+  <testcase name="concurrentCallersAwaitTheSameSubmissionWithoutDuplicates" classname="com.example.nativestarter.viewmodel.CaptionJobCoordinatorTest" time="0.039"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

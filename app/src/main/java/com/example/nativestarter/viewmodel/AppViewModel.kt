@@ -16,6 +16,13 @@ import com.example.nativestarter.domain.editor.AudioSegment
 import com.example.nativestarter.domain.editor.EditorTimeline
 import com.example.nativestarter.domain.editor.EditorTimelineState
 import com.example.nativestarter.domain.editor.SubtitleCue
+import com.example.nativestarter.data.caption.CaptionJobMessages
+import com.example.nativestarter.data.caption.CaptionJobRecordStore
+import com.example.nativestarter.data.caption.CaptionJobRequest
+import com.example.nativestarter.data.caption.CaptionJobUiState
+import com.example.nativestarter.data.caption.CaptionStage
+import com.example.nativestarter.data.caption.CaptionTaskSnapshot
+import com.example.nativestarter.data.caption.SharedPreferencesCaptionJobRecordStore
 import com.example.nativestarter.domain.assistant.AiSkillRegistry
 import com.example.nativestarter.domain.assistant.AssistantMessage
 import com.example.nativestarter.domain.assistant.AssistantMessageRole
@@ -59,6 +66,7 @@ data class AppUiState(
     val assistantDraft: String = "",
     val skillPanelExpanded: Boolean = true,
     val assistantBusy: Boolean = false,
+    val captionJob: CaptionJobUiState? = null,
 )
 
 /**
@@ -76,6 +84,11 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     private val backendSettings = BackendSettings(application)
     private val aiApi = AiClipStudioApi(application, backendSettings)
     private val exportRepository = ExportRepository(application)
+    private val captionCoordinator = CaptionJobCoordinator(
+        scope = viewModelScope,
+        api = aiApi,
+        recordStore = SharedPreferencesCaptionJobRecordStore(application),
+    )
     private var exportJob: Job? = null
     private var assistantJob: Job? = null
     private val mediaPreferences = application.getSharedPreferences("media_workspace", Application.MODE_PRIVATE)
@@ -91,6 +104,26 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
     init {
         mediaPreferences.getString(KEY_IMPORTED_VIDEO_URI, null)?.let { savedUri ->
             importVideo(Uri.parse(savedUri), restoring = true)
+        }
+        // The Automatic Subtitles card is driven by the coordinator's flow.
+        viewModelScope.launch {
+            captionCoordinator.uiState.collect { caption ->
+                _uiState.update { it.copy(captionJob = caption) }
+            }
+        }
+        // Resume monitoring of an interrupted automatic-subtitle job instead of
+        // submitting a duplicate one. The resume path only polls; it never
+        // re-enters the synchronous caption endpoint.
+        viewModelScope.launch {
+            try {
+                captionCoordinator.resumePending()?.let { snapshot ->
+                    applyFinishedCaptionSnapshot(snapshot)
+                }
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                Log.e(TAG, "Resuming the automatic-subtitle job failed", error)
+            }
         }
     }
 
@@ -493,14 +526,31 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
         conversationContext: List<AssistantMessage>,
     ): String = when (operation) {
         BackendSkillOperation.AUTOMATIC_SUBTITLES -> {
-            val response = aiApi.automaticSubtitles(jobId, userMessage.take(1000))
-            if (!response.has("renderId")) {
-                error(response.optString("reply").ifBlank { "The subtitle service did not start a render." })
-            }
-            val renderReply = awaitBackendRender(response, jobId)
+            // Asynchronous caption-jobs workflow: submit once, poll stages,
+            // wait for a terminal state, then pull the rendered result.
+            val videoUri = _uiState.value.importedVideo?.uri?.toString()
+                ?: error("Import a video before generating automatic subtitles.")
+            val snapshot = captionCoordinator.submitOrAwait(
+                CaptionJobRequest(
+                    jobId = jobId,
+                    instructions = userMessage.take(1000),
+                    videoUri = videoUri,
+                ),
+            )
+            applyFinishedCaptionSnapshot(snapshot)
             buildString {
-                append(renderReply)
-                if (userMessage.isNotBlank()) append(" Subtitle instructions were sent to the configured transcription model.")
+                when (snapshot.stage) {
+                    CaptionStage.COMPLETED -> {
+                        val reply = _uiState.value.backendMessage.orEmpty()
+                        append(reply.ifBlank { "Automatic subtitles completed." })
+                        if (userMessage.isNotBlank()) {
+                            append(" Subtitle instructions were sent to the configured transcription model.")
+                        }
+                    }
+                    CaptionStage.CANCELLED -> append("Automatic subtitles were cancelled.")
+                    CaptionStage.FAILED -> error(CaptionJobMessages.forTaskError(snapshot.error))
+                    else -> error("The subtitle job ended in an unexpected state.")
+                }
             }
         }
         BackendSkillOperation.VOICE_CLEANUP_CHAT -> {
@@ -696,6 +746,67 @@ class AppViewModel(application: Application) : AndroidViewModel(application) {
 
     fun dismissEditorMessage() {
         _uiState.update { it.copy(editorMessage = null) }
+    }
+
+    // ---- asynchronous automatic-subtitle job controls ----------------------
+
+    /** Stops polling and asks the backend to cancel the task (real cancellation). */
+    fun cancelCaptionJob() {
+        captionCoordinator.cancelByUser()
+    }
+
+    /** Removes the finished automatic-subtitle card from the UI. */
+    fun dismissCaptionJob() {
+        captionCoordinator.clearUi()
+    }
+
+    /**
+     * Retries a recoverable automatic-subtitle failure: resumes the stored
+     * task when possible, otherwise submits a fresh task for the same request.
+     */
+    fun retryCaptionJob() {
+        val request = captionCoordinator.lastSubmission() ?: captionCoordinator.pendingRequest() ?: run {
+            captionCoordinator.clearUi()
+            return
+        }
+        viewModelScope.launch {
+            try {
+                val snapshot = captionCoordinator.submitOrAwait(request)
+                applyFinishedCaptionSnapshot(snapshot)
+            } catch (cancelled: CancellationException) {
+                throw cancelled
+            } catch (error: Exception) {
+                Log.e(TAG, "Retrying the automatic-subtitle job failed", error)
+            }
+        }
+    }
+
+    /**
+     * Applies a terminal caption-task snapshot to the editor. Completion pulls
+     * the captioned video through the render endpoint and imports it, exactly
+     * like the other backend renders, so the existing editor architecture is
+     * preserved.
+     */
+    private suspend fun applyFinishedCaptionSnapshot(snapshot: CaptionTaskSnapshot) {
+        when (snapshot.stage) {
+            CaptionStage.COMPLETED -> {
+                val renderId = snapshot.renderId
+                if (renderId.isNullOrBlank()) {
+                    _uiState.update {
+                        it.copy(editorMessage = "Automatic subtitles completed but the backend returned no captioned video.")
+                    }
+                    return
+                }
+                awaitBackendRender(org.json.JSONObject().put("renderId", renderId), snapshot.jobId)
+            }
+            CaptionStage.CANCELLED -> _uiState.update {
+                it.copy(editorMessage = "Automatic subtitles were cancelled.")
+            }
+            CaptionStage.FAILED -> _uiState.update {
+                it.copy(editorMessage = CaptionJobMessages.forTaskError(snapshot.error))
+            }
+            else -> Unit
+        }
     }
 
     /** Restores a timeline snapshot captured before a destructive edit, for Undo. */

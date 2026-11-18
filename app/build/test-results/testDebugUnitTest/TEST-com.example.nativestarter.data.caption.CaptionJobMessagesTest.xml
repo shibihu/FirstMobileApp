@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.nativestarter.data.caption.CaptionJobMessagesTest" tests="9" skipped="0" failures="0" errors="0" timestamp="2026-11-18T04:34:04.057Z" hostname="localhost" time="0.036">
+  <properties/>
+  <testcase name="unknownStageHasSafeFallbackLabel" classname="com.example.nativestarter.data.caption.CaptionJobMessagesTest" time="0.002"/>
+  <testcase name="taskErrorsPassThroughSanitisedBackendMessage" classname="com.example.nativestarter.data.caption.CaptionJobMessagesTest" time="0.001"/>
+  <testcase name="forbiddenRequestsMapToTokenGuidance" classname="com.example.nativestarter.data.caption.CaptionJobMessagesTest" time="0.001"/>
+  <testcase name="transientStatusesAreRetryable" classname="com.example.nativestarter.data.caption.CaptionJobMessagesTest" time="0.008"/>
+  <testcase name="authFailuresNeverExposeTheToken" classname="com.example.nativestarter.data.caption.CaptionJobMessagesTest" time="0.002"/>
+  <testcase name="invalidResponsesAreRetryableWithSafeText" classname="com.example.nativestarter.data.caption.CaptionJobMessagesTest" time="0.003"/>
+  <testcase name="stageLabelsCoverEveryKnownStage" classname="com.example.nativestarter.data.caption.CaptionJobMessagesTest" time="0.005"/>
+  <testcase name="notFoundExplainsResubmission" classname="com.example.nativestarter.data.caption.CaptionJobMessagesTest" time="0.001"/>
+  <testcase name="timeoutAndDnsFailuresProduceNetworkGuidance" classname="com.example.nativestarter.data.caption.CaptionJobMessagesTest" time="0.005"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

@@ -64,4 +64,8 @@ dependencies {
 
     // Unit tests only, so debug builds stay light.
     testImplementation("junit:junit:4.13.2")
+    // Real org.json for JVM unit tests (android.jar only ships stubbed classes).
+    testImplementation("org.json:json:20240303")
+    // Virtual-time dispatching for the caption poller and coordinator tests.
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.8.1")
 }

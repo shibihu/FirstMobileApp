@@ -55,6 +55,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.example.nativestarter.data.caption.CaptionJobUiState
+import com.example.nativestarter.data.caption.CaptionStage
 import com.example.nativestarter.domain.assistant.AiSkill
 import com.example.nativestarter.domain.assistant.AiSkillRegistry
 import com.example.nativestarter.domain.assistant.AssistantMessage
@@ -106,6 +108,14 @@ fun AiToolsScreen(viewModel: AppViewModel) {
                 modifier = Modifier.fillMaxWidth(),
             )
         }
+        state.captionJob?.let { job ->
+            CaptionJobCard(
+                state = job,
+                onCancel = viewModel::cancelCaptionJob,
+                onRetry = viewModel::retryCaptionJob,
+                onDismiss = viewModel::dismissCaptionJob,
+            )
+        }
         LazyColumn(
             state = listState,
             modifier = Modifier.weight(1f).fillMaxWidth(),
@@ -146,6 +156,70 @@ fun AiToolsScreen(viewModel: AppViewModel) {
             onRemoveSkill = viewModel::toggleAssistantSkill,
             onSend = { viewModel.sendAssistantMessage() },
         )
+    }
+}
+
+@Composable
+private fun CaptionJobCard(
+    state: CaptionJobUiState,
+    onCancel: () -> Unit,
+    onRetry: () -> Unit,
+    onDismiss: () -> Unit,
+) {
+    Surface(
+        color = when {
+            state.stage == CaptionStage.FAILED -> MaterialTheme.colorScheme.errorContainer
+            state.finished -> MaterialTheme.colorScheme.surfaceVariant
+            else -> MaterialTheme.colorScheme.tertiaryContainer
+        },
+        shape = RoundedCornerShape(12.dp),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Column(modifier = Modifier.fillMaxWidth().padding(horizontal = 14.dp, vertical = 10.dp)) {
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Icon(Icons.Filled.Mic, contentDescription = null, modifier = Modifier.size(16.dp))
+                Text(
+                    "Automatic subtitles",
+                    style = MaterialTheme.typography.labelLarge,
+                    modifier = Modifier.weight(1f),
+                )
+                if (state.finished) {
+                    Icon(Icons.Filled.Close, contentDescription = null, modifier = Modifier.size(16.dp), tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                } else {
+                    CircularProgressIndicator(modifier = Modifier.size(14.dp), strokeWidth = 2.dp)
+                }
+            }
+            Spacer(Modifier.height(4.dp))
+            Text(state.message, style = MaterialTheme.typography.bodyMedium)
+            state.progress?.let { progress ->
+                Spacer(Modifier.height(6.dp))
+                LinearProgressIndicator(
+                    progress = { progress / 100f },
+                    modifier = Modifier.fillMaxWidth(),
+                )
+            }
+            if (state.progress == null && !state.finished) {
+                Spacer(Modifier.height(6.dp))
+                LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+            }
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                if (state.cancellable) {
+                    TextButton(onClick = onCancel) {
+                        Icon(Icons.Filled.Close, contentDescription = null)
+                        Text("Cancel")
+                    }
+                }
+                if (state.retryable && !state.cancellable) {
+                    TextButton(onClick = onRetry) {
+                        Icon(Icons.Filled.Refresh, contentDescription = null)
+                        Text("Retry")
+                    }
+                }
+                if (state.finished) {
+                    TextButton(onClick = onDismiss) { Text("Dismiss") }
+                }
+            }
+        }
     }
 }
 

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.nativestarter.data.caption.CaptionJobPollerTest" tests="13" skipped="0" failures="0" errors="0" timestamp="2026-11-18T04:34:04.894Z" hostname="localhost" time="1.08">
+  <properties/>
+  <testcase name="consecutiveFailuresBeyondLimitGiveUp" classname="com.example.nativestarter.data.caption.CaptionJobPollerTest" time="0.088"/>
+  <testcase name="concurrentPollersDoNotShareState" classname="com.example.nativestarter.data.caption.CaptionJobPollerTest" time="0.143"/>
+  <testcase name="backoffIntervalsGrowAndResetAfterSuccess" classname="com.example.nativestarter.data.caption.CaptionJobPollerTest" time="0.129"/>
+  <testcase name="queuedToTranscribingToCompletedReturnsTerminalSnapshot" classname="com.example.nativestarter.data.caption.CaptionJobPollerTest" time="0.114"/>
+  <testcase name="cancellationExceptionFromFetchIsNeverSwallowed" classname="com.example.nativestarter.data.caption.CaptionJobPollerTest" time="0.056"/>
+  <testcase name="unknownStageKeepsPollingUntilTerminal" classname="com.example.nativestarter.data.caption.CaptionJobPollerTest" time="0.077"/>
+  <testcase name="cancelledTaskStopsPolling" classname="com.example.nativestarter.data.caption.CaptionJobPollerTest" time="0.056"/>
+  <testcase name="retryableApiErrorIsRetried" classname="com.example.nativestarter.data.caption.CaptionJobPollerTest" time="0.046"/>
+  <testcase name="temporaryNetworkFailuresRecoverAfterBackoff" classname="com.example.nativestarter.data.caption.CaptionJobPollerTest" time="0.066"/>
+  <testcase name="failedTaskStopsPolling" classname="com.example.nativestarter.data.caption.CaptionJobPollerTest" time="0.041"/>
+  <testcase name="coroutineCancellationStopsTheLoop" classname="com.example.nativestarter.data.caption.CaptionJobPollerTest" time="0.116"/>
+  <testcase name="nonRetryableApiErrorAbortsImmediately" classname="com.example.nativestarter.data.caption.CaptionJobPollerTest" time="0.063"/>
+  <testcase name="fullPipelineStagesReachCompletion" classname="com.example.nativestarter.data.caption.CaptionJobPollerTest" time="0.054"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

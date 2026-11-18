@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.nativestarter.data.caption.CaptionTaskParsingTest" tests="10" skipped="0" failures="0" errors="0" timestamp="2026-11-18T04:34:06.025Z" hostname="localhost" time="0.098">
+  <properties/>
+  <testcase name="parsesFailedResponseWithStructuredError" classname="com.example.nativestarter.data.caption.CaptionTaskParsingTest" time="0.044"/>
+  <testcase name="parsesCompletedResponseWithRenderId" classname="com.example.nativestarter.data.caption.CaptionTaskParsingTest" time="0.002"/>
+  <testcase name="unknownFutureStageMapsToUnknownAndKeepsPolling" classname="com.example.nativestarter.data.caption.CaptionTaskParsingTest" time="0.003"/>
+  <testcase name="invalidJsonPayloadIsRejected" classname="com.example.nativestarter.data.caption.CaptionTaskParsingTest" time="0.004"/>
+  <testcase name="parsesStatusResponseWithStageAndProgress" classname="com.example.nativestarter.data.caption.CaptionTaskParsingTest" time="0.002"/>
+  <testcase name="missingTaskIdFailsClosed" classname="com.example.nativestarter.data.caption.CaptionTaskParsingTest" time="0.005"/>
+  <testcase name="duplicateSubmissionResponseParsesIdentically" classname="com.example.nativestarter.data.caption.CaptionTaskParsingTest" time="0.005"/>
+  <testcase name="parsesSubmissionResponseWithTaskIdentifiers" classname="com.example.nativestarter.data.caption.CaptionTaskParsingTest" time="0.005"/>
+  <testcase name="localCancelledSnapshotIsTerminalWithoutRenderId" classname="com.example.nativestarter.data.caption.CaptionTaskParsingTest" time="0.002"/>
+  <testcase name="parsesCancelledResponse" classname="com.example.nativestarter.data.caption.CaptionTaskParsingTest" time="0.003"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

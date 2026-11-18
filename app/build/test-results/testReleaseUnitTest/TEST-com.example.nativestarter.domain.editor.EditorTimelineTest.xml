@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="com.example.nativestarter.domain.editor.EditorTimelineTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2026-11-18T04:34:06.206Z" hostname="localhost" time="0.229">
+  <properties/>
+  <testcase name="srtRoundTripsMillisecondPrecisionAndMultilineCueText" classname="com.example.nativestarter.domain.editor.EditorTimelineTest" time="0.182"/>
+  <testcase name="splitAtPlayheadCreatesAdjacentSourceSegments" classname="com.example.nativestarter.domain.editor.EditorTimelineTest" time="0.024"/>
+  <testcase name="trimChangesDurationAndDeleteRemovesOnlySelectedSegment" classname="com.example.nativestarter.domain.editor.EditorTimelineTest" time="0.015"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>
